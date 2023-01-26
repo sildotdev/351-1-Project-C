@@ -331,9 +331,11 @@ VBObox0.prototype.adjust = function() {
               '.adjust() call you needed to call this.switchToMe()!!');
   }
   // this.ModelMat.setPerspective(30, 1, 1, 100);
-  this.ProjMat.setPerspective(30, 1, 1, 100);
-  this.ViewMat.setLookAt(0, 10, 0, 0, 0, 0, 0, 0, 1);
-  this.MVP.set(this.ProjMat).multiply(this.ViewMat).multiply(this.ModelMat);
+  this.ProjMat.setPerspective(60, 1, 1, 100);
+  this.ViewMat.setLookAt(g_Camera.elements[0], g_Camera.elements[1], g_Camera.elements[2],
+    g_Camera.elements[0] + g_CameraFront.elements[0], g_Camera.elements[1] + g_CameraFront.elements[1], g_Camera.elements[2] + g_CameraFront.elements[2],
+    g_CameraUp.elements[0], g_CameraUp.elements[1], g_CameraUp.elements[2]);
+  // this.MVP.set(this.ProjMat).multiply(this.ViewMat).multiply(this.ModelMat);
   
   gl.uniformMatrix4fv(this.u_ModelMatLoc, false, this.MVP.elements);
   gl.uniformMatrix4fv(this.u_ViewMatLoc, false, this.ViewMat.elements);

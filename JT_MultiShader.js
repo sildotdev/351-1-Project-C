@@ -170,6 +170,8 @@ function main() {
 	part2Box.init(gl);    //  "   "   "  for 2nd kind of shading & lighting
 	
   gl.clearColor(0.2, 0.2, 0.2, 1);	  // RGBA color for clearing <canvas>
+
+  window.addEventListener("keydown", myKeyDown);
   
   // ==============ANIMATION=============
   // Quick tutorials on synchronous, real-time animation in JavaScript/HTML-5: 
@@ -198,6 +200,122 @@ function main() {
     };
   //------------------------------------
   tick();                       // do it again!
+}
+
+// thank you https://learnopengl.com/Getting-started/Camera
+var g_Camera = new Vector3([3.0, 0, 1.0]);
+var g_CameraFront = new Vector3([-1, 0, 0]);
+var g_CameraUp = new Vector3([0, 0, 1.0]);
+
+var g_Pitch = -1 * Math.PI; g_Yaw = 0.0; g_Roll = 0.0;
+var g_CameraDirection = new Vector3([0, 0, 0]);
+
+function moveCameraFront(positive) {
+  var speed = 0.1;
+  if (!positive) {
+    speed = -speed;
+  }
+
+  g_Camera.elements[0] += g_CameraFront.elements[0] * speed
+  g_Camera.elements[1] += g_CameraFront.elements[1] * speed
+  // g_Camera.elements[2] += g_CameraFront.elements[2] * speed
+}
+
+function moveCameraRight(positive) {
+  var speed = 0.1;
+  if (!positive) {
+    speed = -speed;
+  }
+
+  rightVector = new Vector3([g_CameraFront.elements[1], -g_CameraFront.elements[0], 0]);
+  rightVector.normalize();
+
+  g_Camera.elements[0] += rightVector.elements[0] * speed
+  g_Camera.elements[1] += rightVector.elements[1] * speed
+  g_Camera.elements[2] += rightVector.elements[2] * speed
+}
+
+function pitchCamera(positive) {
+  var speed = 0.05;
+  if (!positive) {
+    speed = -speed;
+  }
+
+  g_Pitch += speed;
+
+  g_CameraDirection.elements[0] = Math.cos(g_Yaw) * Math.cos(g_Pitch);
+  g_CameraDirection.elements[1] = Math.sin(g_Yaw) * Math.cos(g_Pitch);
+  g_CameraDirection.elements[2] = Math.sin(g_Pitch);
+
+  g_CameraFront.elements[0] = g_CameraDirection.elements[0];
+  g_CameraFront.elements[1] = g_CameraDirection.elements[1];
+  g_CameraFront.elements[2] = g_CameraDirection.elements[2];
+
+  g_CameraFront = g_CameraFront.normalize();
+
+  g_CameraUp.elements[0] = Math.cos(g_Yaw) * Math.cos(g_Pitch - Math.PI / 2);
+  g_CameraUp.elements[1] = Math.sin(g_Yaw) * Math.cos(g_Pitch - Math.PI / 2);
+  g_CameraUp.elements[2] = Math.sin(g_Pitch - Math.PI / 2);
+
+  g_CameraUp = g_CameraUp.normalize();
+
+  g_CameraFront.printMe()
+}
+
+function yawCamera(positive) {
+  var speed = 0.05;
+  if (!positive) {
+    speed = -speed;
+  }
+
+  g_Yaw += speed;
+
+  g_CameraDirection.elements[0] = Math.cos(g_Yaw) * Math.cos(g_Pitch);
+  g_CameraDirection.elements[1] = Math.sin(g_Yaw) * Math.cos(g_Pitch);
+  g_CameraDirection.elements[2] = Math.sin(g_Pitch);
+
+  g_CameraDirection = g_CameraDirection.normalize();
+
+  g_CameraFront.elements[0] = g_CameraDirection.elements[0];
+  g_CameraFront.elements[1] = g_CameraDirection.elements[1];
+  g_CameraFront.elements[2] = g_CameraDirection.elements[2];
+
+  g_CameraFront = g_CameraFront.normalize();
+
+  g_CameraUp.elements[0] = Math.cos(g_Yaw) * Math.cos(g_Pitch - Math.PI / 2);
+  g_CameraUp.elements[1] = Math.sin(g_Yaw) * Math.cos(g_Pitch - Math.PI / 2);
+  g_CameraUp.elements[2] = Math.sin(g_Pitch - Math.PI / 2);
+}
+
+function myKeyDown(kev) {
+  switch (kev.code) {
+    case "KeyA":
+      moveCameraRight(false);
+      break;
+    case "KeyD":
+      moveCameraRight(true);
+      break;
+    case "KeyW":
+      moveCameraFront(true);
+      break;
+    case "KeyS":
+      moveCameraFront(false);
+      break;
+    case "ArrowLeft":
+      yawCamera(true);
+      break;
+    case "ArrowRight":
+      yawCamera(false);
+      break;
+    case "ArrowUp":
+      pitchCamera(false);
+      break;
+    case "ArrowDown":
+      pitchCamera(true);
+      break;
+    default:
+      break;
+  }
 }
 
 function timerAll() {
