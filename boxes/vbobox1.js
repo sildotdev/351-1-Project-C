@@ -14,25 +14,28 @@ function VBObox1() {
 // values here, in this one coonstrutor function, ensures we can change them 
 // easily WITHOUT disrupting any other code, ever!
   
-  this.VERT_SRC =	//--------------------- VERTEX SHADER source code 
-  'precision highp float;\n' +				// req'd in OpenGL ES if we use 'float'
-  //
-  'uniform mat4 u_ModelMat0;\n' +
-  'attribute vec4 a_Pos0;\n' +
-  'attribute vec3 a_Colr0;\n'+
-  'varying vec3 v_Colr0;\n' +
-  //
-  'void main() {\n' +
-  '  gl_Position = u_ModelMat0 * a_Pos0;\n' +
-  '	 v_Colr0 = a_Colr0;\n' +
-  ' }\n';
+this.VERT_SRC =	//--------------------- VERTEX SHADER source code 
+'precision highp float;\n' +				// req'd in OpenGL ES if we use 'float'
+//
+'uniform mat4 u_ModelMat0;\n' +
+'uniform mat4 u_ViewMat0;\n' +
+'uniform mat4 u_ProjMat0;\n' +
+'attribute vec4 a_Pos0;\n' +
+'attribute vec3 a_Colr0;\n'+
+'varying vec3 v_Colr0;\n' +
+//
+'void main() {\n' +
+'  mat4 MVP = u_ProjMat0 * u_ViewMat0 * u_ModelMat0;\n' +
+'  gl_Position = MVP * a_Pos0;\n' +
+'	 v_Colr0 = a_Colr0;\n' +
+' }\n';
 
-  this.FRAG_SRC = //---------------------- FRAGMENT SHADER source code 
-  'precision mediump float;\n' +
-  'varying vec3 v_Colr0;\n' +
-  'void main() {\n' +
-  '  gl_FragColor = vec4(v_Colr0, 1.0);\n' + 
-  '}\n';
+this.FRAG_SRC = //---------------------- FRAGMENT SHADER source code 
+'precision mediump float;\n' +
+'varying vec3 v_Colr0;\n' +
+'void main() {\n' +
+'  gl_FragColor = vec4(v_Colr0, 1.0);\n' + 
+'}\n';
 
   this.vboContents = g_mdl_sphere;
 
@@ -79,6 +82,15 @@ function VBObox1() {
               //---------------------- Uniform locations &values in our shaders
   this.ModelMat = new Matrix4();	// Transforms CVV axes to model axes.
   this.u_ModelMatLoc;							// GPU location for u_ModelMat uniform
+
+  this.ViewMat = new Matrix4();	// Transforms World axes to CVV axes.
+  this.u_ViewMatLoc;							// GPU location for u_ViewMat uniform
+
+  this.ProjMat = new Matrix4();	// Transforms CVV axes to clip axes.
+  this.u_ProjMatLoc;							// GPU location for u_ProjMat uniform
+
+  this.MVP = new Matrix4();		// Transforms CVV axes to clip axes.
+  this.u_MVPLoc;								// GPU location for u_MVP uniform
 }
 
 VBObox1.prototype.init = function() {
@@ -161,7 +173,21 @@ VBObox1.prototype.init = function() {
     console.log(this.constructor.name + 
                 '.init() failed to get GPU location for u_ModelMat1 uniform');
     return;
-  }  
+  }
+
+  this.u_ViewMatLoc = gl.getUniformLocation(this.shaderLoc, 'u_ViewMat0');
+  if (!this.u_ViewMatLoc) {
+    console.log(this.constructor.name + 
+                '.init() failed to get the GPU location of u_ViewMat0 uniform');
+    return;
+  }
+
+  this.u_ProjMatLoc = gl.getUniformLocation(this.shaderLoc, 'u_ProjMat0');
+  if (!this.u_ProjMatLoc) {
+    console.log(this.constructor.name +
+                '.init() failed to get the GPU location of u_ProjMat0 uniform');
+    return;
+  }
 }
 
 VBObox1.prototype.switchToMe = function() {
@@ -252,15 +278,17 @@ VBObox1.prototype.adjust = function() {
               '.adjust() call you needed to call this.switchToMe()!!');
   }  
   // Adjust values for our uniforms,
-  this.ModelMat.setRotate(g_angleNow0, 0, 0, 1);	  // rotate drawing axes,
-  this.ModelMat.translate(0.35, 0, 0);							// then translate them.
-  //  Transfer new uniforms' values to the GPU:-------------
-  // Send  new 'ModelMat' values to the GPU's 'u_ModelMat1' uniform: 
-  gl.uniformMatrix4fv(this.u_ModelMatLoc,	// GPU location of the uniform
-                      false, 				// use matrix transpose instead?
-                      this.ModelMat.elements);	// send data from Javascript.
-  // Adjust the attributes' stride and offset (if necessary)
-  // (use gl.vertexAttribPointer() calls and gl.enableVertexAttribArray() calls)
+  // this.ModelMat.setRotate(g_angleNow0, 0, 0, 1);	  // rotate drawing axes,
+  // this.ModelMat.translate(0.35, 0, 0);							// then translate them.
+
+  this.ProjMat.setPerspective(60, 1, 1, 100);
+  this.ViewMat.setLookAt(g_Camera.elements[0], g_Camera.elements[1], g_Camera.elements[2],
+  g_Camera.elements[0] + g_CameraFront.elements[0], g_Camera.elements[1] + g_CameraFront.elements[1], g_Camera.elements[2] + g_CameraFront.elements[2],
+  g_CameraUp.elements[0], g_CameraUp.elements[1], g_CameraUp.elements[2]);
+
+  gl.uniformMatrix4fv(this.u_ModelMatLoc, false, this.MVP.elements);
+  gl.uniformMatrix4fv(this.u_ViewMatLoc, false, this.ViewMat.elements);
+  gl.uniformMatrix4fv(this.u_ProjMatLoc, false, this.ProjMat.elements);
 }
 
 VBObox1.prototype.draw = function() {
@@ -272,6 +300,25 @@ VBObox1.prototype.draw = function() {
         console.log('ERROR! before' + this.constructor.name + 
               '.draw() call you needed to call this.switchToMe()!!');
   }  
+
+      //----------------SOLVE THE 'REVERSED DEPTH' PROBLEM:------------------------
+  // IF the GPU doesn't transform our vertices by a 3D Camera Projection Matrix
+  // (and it doesn't -- not until Project B) then the GPU will compute reversed 
+  // depth values:  depth==0 for vertex z == -1;   (but depth = 0 means 'near') 
+  //		    depth==1 for vertex z == +1.   (and depth = 1 means 'far').
+  //
+  // To correct the 'REVERSED DEPTH' problem, we could:
+  //  a) reverse the sign of z before we render it (e.g. scale(1,1,-1); ugh.)
+  //  b) reverse the usage of the depth-buffer's stored values, like this:
+  // gl.enable(gl.DEPTH_TEST); // enabled by default, but let's be SURE.
+
+  // gl.clearDepth(0.0);       // each time we 'clear' our depth buffer, set all
+                            // pixel depths to 0.0  (1.0 is DEFAULT)
+  // gl.depthFunc(gl.LESS); // draw a pixel only if its depth value is GREATER
+                            // than the depth buffer's stored value.
+                            // (gl.LESS is DEFAULT; reverse it!)
+  //------------------end 'REVERSED DEPTH' fix---------------------------------
+
   // ----------------------------Draw the contents of the currently-bound VBO:
   gl.drawArrays(gl.TRIANGLES, 	    // select the drawing primitive to draw,
                   // choices: gl.POINTS, gl.LINES, gl.LINE_STRIP, gl.LINE_LOOP, 

@@ -90,8 +90,6 @@ function VBObox0() {
   g_mdl_grid = gridVerts()
   this.vboContents = g_mdl_grid;
 
-  console.log(g_mdl_grid)
-
   this.vboVerts = g_mdl_grid.length / 7;						// # of vertices held in 'vboContents' array
   this.FSIZE = this.vboContents.BYTES_PER_ELEMENT;
                                 // bytes req'd by 1 vboContents array element;

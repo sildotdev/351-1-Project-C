@@ -113,7 +113,7 @@ var g_posMin1 = -1.0;
 
 // For mouse/keyboard:------------------------
 var g_show0 = 1;								// 0==Show, 1==Hide VBO0 contents on-screen.
-var g_show1 = 0;								// 	"					"			VBO1		"				"				" 
+var g_show1 = 1;								// 	"					"			VBO1		"				"				" 
 var g_show2 = 0;                //  "         "     VBO2    "       "       "
 
 function main() {
@@ -153,11 +153,12 @@ function main() {
   // To correct the 'REVERSED DEPTH' problem, we could:
   //  a) reverse the sign of z before we render it (e.g. scale(1,1,-1); ugh.)
   //  b) reverse the usage of the depth-buffer's stored values, like this:
+  // I guess I reversed the z somehow...?
   gl.enable(gl.DEPTH_TEST); // enabled by default, but let's be SURE.
 
-  gl.clearDepth(0.0);       // each time we 'clear' our depth buffer, set all
+  // gl.clearDepth(0.0);       // each time we 'clear' our depth buffer, set all
                             // pixel depths to 0.0  (1.0 is DEFAULT)
-  gl.depthFunc(gl.GREATER); // draw a pixel only if its depth value is GREATER
+  gl.depthFunc(gl.LESS); // draw a pixel only if its depth value is GREATER
                             // than the depth buffer's stored value.
                             // (gl.LESS is DEFAULT; reverse it!)
   //------------------end 'REVERSED DEPTH' fix---------------------------------
