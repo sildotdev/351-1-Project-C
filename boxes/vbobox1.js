@@ -281,7 +281,7 @@ VBObox1.prototype.adjust = function() {
   // this.ModelMat.setRotate(g_angleNow0, 0, 0, 1);	  // rotate drawing axes,
   // this.ModelMat.translate(0.35, 0, 0);							// then translate them.
 
-  this.ProjMat.setPerspective(60, 1, 1, 100);
+  this.ProjMat.setPerspective(60, g_vpAspect, 1, 100);
   this.ViewMat.setLookAt(g_Camera.elements[0], g_Camera.elements[1], g_Camera.elements[2],
   g_Camera.elements[0] + g_CameraFront.elements[0], g_Camera.elements[1] + g_CameraFront.elements[1], g_Camera.elements[2] + g_CameraFront.elements[2],
   g_CameraUp.elements[0], g_CameraUp.elements[1], g_CameraUp.elements[2]);

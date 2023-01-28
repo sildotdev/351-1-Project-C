@@ -116,6 +116,8 @@ var g_show0 = 1;								// 0==Show, 1==Hide VBO0 contents on-screen.
 var g_show1 = 1;								// 	"					"			VBO1		"				"				" 
 var g_show2 = 0;                //  "         "     VBO2    "       "       "
 
+var g_vpAspect = 1;
+
 function main() {
 //=============================================================================
   // Retrieve the HTML-5 <canvas> element where webGL will draw our pictures:
@@ -173,6 +175,8 @@ function main() {
   gl.clearColor(0.2, 0.2, 0.2, 1);	  // RGBA color for clearing <canvas>
 
   window.addEventListener("keydown", myKeyDown);
+
+  var xtraMargin = 16;
   
   // ==============ANIMATION=============
   // Quick tutorials on synchronous, real-time animation in JavaScript/HTML-5: 
@@ -193,7 +197,13 @@ function main() {
   //		 	fixed-time 'setInterval()' calls that may take longer than expected.
   //------------------------------------
   var tick = function() {		    // locally (within main() only), define our 
-                                // self-calling animation function. 
+                                // self-calling animation function.
+    g_canvasID.width = innerWidth - xtraMargin;
+    g_canvasID.height = ( innerHeight * 3/4 ) - xtraMargin;
+  
+    g_vpAspect = ( g_canvasID.width) /
+                ( g_canvasID.height );
+
     requestAnimationFrame(tick, g_canvasID); // browser callback request; wait
                                 // til browser is ready to re-draw canvas, then
     timerAll();  // Update all time-varying params, and
@@ -377,6 +387,8 @@ function drawAll() {
 //=============================================================================
   // Clear on-screen HTML-5 <canvas> object:
   gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
+
+  gl.viewport(0, 0, g_canvasID.width, g_canvasID.height);
 
 var b4Draw = Date.now();
 var b4Wait = b4Draw - g_lastMS;
