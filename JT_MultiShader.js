@@ -438,3 +438,15 @@ function VBO2toggle() {
   else g_show2 = 0;									// hide.
   console.log('g_show2: '+g_show2);
 }
+
+function changeShader() {
+  var selectValue = document.getElementById("shaderSelect").value;
+
+  console.log(selectValue)
+}
+
+function changeLighting() {
+  var selectValue = document.getElementById("lightingSelect").value;
+
+  console.log(selectValue)
+}

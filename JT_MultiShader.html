@@ -14,6 +14,19 @@
       <button type="button" onclick="VBO1toggle()">VBO-1 hide/show</button>
       <button type="button" onclick="VBO2toggle()">VBO-2 hide/show</button>
     </p>
+    <p>
+      <!-- Gouraud vs Phong select dropdown -->
+      <select id="shaderSelect" onchange="changeShader()">
+        <option value="gouraud">Gouraud</option>
+        <option value="phong">Phong</option>
+      </select>
+
+      <!-- Phong Lighting vs Blinn-Phong Lighting dropdown -->
+      <select id="lightingSelect" onchange="changeLighting()">
+        <option value="phong">Phong Lighting</option>
+        <option value="blinn">Blinn-Phong Lighting</option>
+      </select>
+    </p>
     <script src="models/sphere.js"></script>
     <script src="lib/webgl-utils.js"></script>
     <script src="lib/webgl-debug.js"></script>
