@@ -347,39 +347,6 @@ function timerAll() {
   // Find new time-dependent parameters using the current or elapsed time:
   // Continuous rotation:
   g_angleNow0 = g_angleNow0 + (g_angleRate0 * elapsedMS) / 1000.0;
-  g_angleNow1 = g_angleNow1 + (g_angleRate1 * elapsedMS) / 1000.0;
-  g_angleNow2 = g_angleNow2 + (g_angleRate2 * elapsedMS) / 1000.0;
-  g_angleNow0 %= 360.0;   // keep angle >=0.0 and <360.0 degrees  
-  g_angleNow1 %= 360.0;   
-  g_angleNow2 %= 360.0;
-  if(g_angleNow1 > g_angleMax1) { // above the max?
-    g_angleNow1 = g_angleMax1;    // move back down to the max, and
-    g_angleRate1 = -g_angleRate1; // reverse direction of change.
-    }
-  else if(g_angleNow1 < g_angleMin1) {  // below the min?
-    g_angleNow1 = g_angleMin1;    // move back up to the min, and
-    g_angleRate1 = -g_angleRate1;
-    }
-  // Continuous movement:
-  g_posNow0 += g_posRate0 * elapsedMS / 1000.0;
-  g_posNow1 += g_posRate1 * elapsedMS / 1000.0;
-  // apply position limits
-  if(g_posNow0 > g_posMax0) {   // above the max?
-    g_posNow0 = g_posMax0;      // move back down to the max, and
-    g_posRate0 = -g_posRate0;   // reverse direction of change
-    }
-  else if(g_posNow0 < g_posMin0) {  // or below the min? 
-    g_posNow0 = g_posMin0;      // move back up to the min, and
-    g_posRate0 = -g_posRate0;   // reverse direction of change.
-    }
-  if(g_posNow1 > g_posMax1) {   // above the max?
-    g_posNow1 = g_posMax1;      // move back down to the max, and
-    g_posRate1 = -g_posRate1;   // reverse direction of change
-    }
-  else if(g_posNow1 < g_posMin1) {  // or below the min? 
-    g_posNow1 = g_posMin1;      // move back up to the min, and
-    g_posRate1 = -g_posRate1;   // reverse direction of change.
-    }
 
 }
 
