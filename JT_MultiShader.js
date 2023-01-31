@@ -463,6 +463,9 @@ function changeMaterial() {
     case "MATL_TURQUOISE":
       g_selectedMaterial.setMatl(MATL_TURQUOISE)
       break;
+    case "MATL_PEARL":
+      g_selectedMaterial.setMatl(MATL_PEARL)
+      break;
     default:
       break;
   }
