@@ -10,10 +10,16 @@
     Please use a browser that supports "canvas"
     </canvas>
     <p>
+      <b>INSTRUCTIONS: </b>
+      Use WASD to move around. Use the arrow keys to rotate the camera.
+    </p>
+    <p>
+      <b>Select lighting and shading:</b>
+
       <!-- Gouraud vs Phong select dropdown -->
       <select id="shaderSelect" onchange="changeShader()">
-        <option value="gouraud">Gouraud</option>
-        <option value="phong">Phong</option>
+        <option value="gouraud">Gouraud Shading</option>
+        <option value="phong">Phong Shading</option>
       </select>
 
       <!-- Phong Lighting vs Blinn-Phong Lighting dropdown -->
@@ -23,6 +29,7 @@
       </select>
 
       <!-- Sphere Material Select -->
+      <b>Select Sphere Material:</b>
       <select id="materialSelect" onchange="changeMaterial()">
         <option value="MATL_RED_PLASTIC">Red Plastic</option>
         <option value="MATL_BLU_PLASTIC">Blue Plastic</option>
@@ -39,7 +46,7 @@
     </p>
 
     <h2>Light</h2>
-    <input type="checkbox" id="lightSwitch" onchange="changeLightSwitch()" checked>On
+    <input type="checkbox" id="lightSwitch" onchange="changeLightSwitch()" checked>Light On
     <div style="display: flex; gap: 2em;">
       <div>
         <h3>Position</h3>
