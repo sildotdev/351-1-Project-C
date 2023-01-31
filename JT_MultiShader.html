@@ -40,26 +40,69 @@
         <option value="MATL_JADE">Jade</option>
         <option value="MATL_TURQUOISE">Turquoise</option>
       </select>
-
-      <!-- Lightswitch Checkbox -->
-      <input type="checkbox" id="lightSwitch" onchange="changeLightSwitch()" checked>Light
     </p>
 
     <h2>Light</h2>
-    <div>
-      <h3>Position</h3>
-      <label for="lightX">X</label>
-      <input type="range" id="lightX" min="-10" max="10" step="0.1" value="0" onchange="changeLightX()" oninput="changeLightX()">
-      <input type="number" id="lightXValue" min="-10" max="10" step="0.1" value="0" onchange="changeLightX(true)" oninput="changeLightX(true)">
-      <br>
-      <label for="lightX">Y</label>
-      <input type="range" id="lightY" min="-10" max="10" step="0.1" value="0" onchange="changeLightY()" oninput="changeLightY()">
-      <input type="number" id="lightYValue" min="-10" max="10" step="0.1" value="0" onchange="changeLightY(true)" oninput="changeLightY(true)">
-      <br>
-      <label for="lightX">Z</label>
-      <input type="range" id="lightZ" min="-10" max="10" step="0.1" value="0" onchange="changeLightZ()" oninput="changeLightZ()">
-      <input type="number" id="lightZValue" min="-10" max="10" step="0.1" value="0" onchange="changeLightZ(true)" oninput="changeLightZ(true)">
-      <br>
+    <input type="checkbox" id="lightSwitch" onchange="changeLightSwitch()" checked>On
+    <div style="display: flex; gap: 2em;">
+      <div>
+        <h3>Position</h3>
+        <label for="lightX">X</label>
+        <input type="range" id="lightX" min="-10" max="10" step="0.1" value=5" onchange="changeLightX()" oninput="changeLightX()">
+        <input type="number" id="lightXValue" min="-10" max="10" step="0.1" value="5" onchange="changeLightX(true)" oninput="changeLightX(true)">
+        <br>
+        <label for="lightX">Y</label>
+        <input type="range" id="lightY" min="-10" max="10" step="0.1" value="3" onchange="changeLightY()" oninput="changeLightY()">
+        <input type="number" id="lightYValue" min="-10" max="10" step="0.1" value="3" onchange="changeLightY(true)" oninput="changeLightY(true)">
+        <br>
+        <label for="lightX">Z</label>
+        <input type="range" id="lightZ" min="-10" max="10" step="0.1" value="2" onchange="changeLightZ()" oninput="changeLightZ()">
+        <input type="number" id="lightZValue" min="-10" max="10" step="0.1" value="2" onchange="changeLightZ(true)" oninput="changeLightZ(true)">
+        <br>
+      </div>
+      <div>
+        <h3>Ambient</h3>
+        <label for="lightAmbient0">R</label>
+        <input type="range" id="lightAmbient0" min="0" max="1" step="0.01" value="0.2" onchange="changeLightAmbient(0)" oninput="changeLightAmbient(0)">
+        <input type="number" id="lightAmbientValue0" min="0" max="1" step="0.01" value="0.2" onchange="changeLightAmbientR(0, true)" oninput="changeLightAmbient(0, true)">
+        <br>
+        <label for="lightAmbient1">G</label>
+        <input type="range" id="lightAmbient1" min="0" max="1" step="0.01" value="0.2" onchange="changeLightAmbient(1)" oninput="changeLightAmbient(1)">
+        <input type="number" id="lightAmbientValue1" min="0" max="1" step="0.01" value="0.2" onchange="changeLightAmbient(1, true)" oninput="changeLightAmbient(1, true)">
+        <br>
+        <label for="lightAmbient2">B</label>
+        <input type="range" id="lightAmbient2" min="0" max="1" step="0.01" value="0.2" onchange="changeLightAmbient(2)" oninput="changeLightAmbient(2)">
+        <input type="number" id="lightAmbientValue2" min="0" max="1" step="0.01" value="0.2" onchange="changeLightAmbient(2, true)" oninput="changeLightAmbient(2, true)">
+        <br>
+      </div>
+      <div>
+        <h3>Diffuse</h3>
+        <label for="lightDiffuse0">R</label>
+        <input type="range" id="lightDiffuse0" min="0" max="1" step="0.01" value="0.5" onchange="changeLightDiffuse(0)" oninput="changeLightDiffuse(0)">
+        <input type="number" id="lightDiffuseValue0" min="0" max="1" step="0.01" value="0.5" onchange="changeLightDiffuse(0, true)" oninput="changeLightDiffuse(0, true)">
+        <br>
+        <label for="lightDiffuse1">G</label>
+        <input type="range" id="lightDiffuse1" min="0" max="1" step="0.01" value="0.5" onchange="changeLightDiffuse(1)" oninput="changeLightDiffuse(1)">
+        <input type="number" id="lightDiffuseValue1" min="0" max="1" step="0.01" value="0.5" onchange="changeLightDiffuse(1, true)" oninput="changeLightDiffuse(1, true)">
+        <br>
+        <label for="lightDiffuse2">B</label>
+        <input type="range" id="lightDiffuse2" min="0" max="1" step="0.01" value="0.5" onchange="changeLightDiffuse(2)" oninput="changeLightDiffuse(2)">
+        <input type="number" id="lightDiffuseValue2" min="0" max="1" step="0.01" value="0.5" onchange="changeLightDiffuse(2, true)" oninput="changeLightDiffuse(2, true)">
+      </div>
+      <div>
+        <h3>Specular</h3>
+        <label for="lightSpecular0">R</label>
+        <input type="range" id="lightSpecular0" min="0" max="1" step="0.01" value="0.5" onchange="changeLightSpecular(0)" oninput="changeLightSpecular(0)">
+        <input type="number" id="lightSpecularValue0" min="0" max="1" step="0.01" value="0.5" onchange="changeLightSpecular(0, true)" oninput="changeLightSpecular(0, true)">
+        <br>
+        <label for="lightSpecular1">G</label>
+        <input type="range" id="lightSpecular1" min="0" max="1" step="0.01" value="0.5" onchange="changeLightSpecular(1)" oninput="changeLightSpecular(1)">
+        <input type="number" id="lightSpecularValue1" min="0" max="1" step="0.01" value="0.5" onchange="changeLightSpecular(1, true)" oninput="changeLightSpecular(1, true)">
+        <br>
+        <label for="lightSpecular2">B</label>
+        <input type="range" id="lightSpecular2" min="0" max="1" step="0.01" value="0.5" onchange="changeLightSpecular(2)" oninput="changeLightSpecular(2)">
+        <input type="number" id="lightSpecularValue2" min="0" max="1" step="0.01" value="0.5" onchange="changeLightSpecular(2, true)" oninput="changeLightSpecular(2, true)">
+      </div>
     </div>
 
     <script src="models/sphere.js"></script>

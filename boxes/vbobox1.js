@@ -209,9 +209,9 @@ VBOGouraud.prototype.switchToMe = function () {
 
   // Light 0:
   this.light0.I_pos.elements.set(g_lightPos);
-  this.light0.I_ambi.elements.set([0.2, 0.2, 0.2]);
-  this.light0.I_diff.elements.set([0.8, 0.8, 0.8]);
-  this.light0.I_spec.elements.set([0.8, 0.8, 0.8]);
+  this.light0.I_ambi.elements.set(g_lightAmbi);
+  this.light0.I_diff.elements.set(g_lightDiff);
+  this.light0.I_spec.elements.set(g_lightSpec);
 
   gl.uniform3fv(this.locs["u_LampSet[0].pos"], this.light0.I_pos.elements.slice(0, 3));
   gl.uniform3fv(this.locs["u_LampSet[0].ambi"], this.light0.I_ambi.elements);

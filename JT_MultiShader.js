@@ -121,7 +121,10 @@ var g_vpAspect = 1;
 var g_isBlinn = 0;              // 0 == Phong, 1 == Blinn-Phong
 var g_selectedMaterial = new Material( MATL_RED_PLASTIC )
 var g_isLightOn = 1;            // 0 == off, 1 == on
-var g_lightPos = [0, 0, 0];   // light position
+var g_lightPos = [5, 3, 2];   // light position
+var g_lightAmbi = [0.2, 0.2, 0.2];  // light ambient
+var g_lightDiff = [0.5, 0.5, 0.5];  // light diffuse
+var g_lightSpec = [0.5, 0.5, 0.5];  // light specular
 
 function main() {
 //=============================================================================
@@ -511,4 +514,46 @@ function changeLightZ(bFromNumInput) {
   }
 
   g_lightPos[2] = range.value;
+}
+
+function changeLightAmbient(i, bFromNumInput) {
+  var range = document.getElementById("lightAmbient" + i);
+  var input = document.getElementById("lightAmbientValue" + i);
+
+  if (bFromNumInput) {
+    range.value = input.value;
+  }
+  else {
+    input.value = range.value;
+  }
+
+  g_lightAmbi[i] = range.value;
+}
+
+function changeLightDiffuse(i, bFromNumInput) {
+  var range = document.getElementById("lightDiffuse" + i);
+  var input = document.getElementById("lightDiffuseValue" + i);
+
+  if (bFromNumInput) {
+    range.value = input.value;
+  }
+  else {
+    input.value = range.value;
+  }
+
+  g_lightDiff[i] = range.value;
+}
+
+function changeLightSpecular(i, bFromNumInput) {
+  var range = document.getElementById("lightSpecular" + i);
+  var input = document.getElementById("lightSpecularValue" + i);
+
+  if (bFromNumInput) {
+    range.value = input.value;
+  }
+  else {
+    input.value = range.value;
+  }
+
+  g_lightSpec[i] = range.value;
 }
