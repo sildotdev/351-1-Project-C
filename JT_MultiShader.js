@@ -79,8 +79,14 @@ var g_canvasID;									// HTML-5 'canvas' element ID#
 
 // For multiple VBOs & Shaders:-----------------
 worldBox = new VBObox0();		  // Holds VBO & shaders for 3D 'world' ground-plane grid, etc;
+
 part1Box = new VBOGouraud();		  // "  "  for first set of custom-shaded 3D parts
+gouraudCreature = new VBOGouraudCreature();
+gouraudString = new VBOGouraudString();
+gouraudSpiral = new VBOGouraudSpiral();
+
 part2Box = new VBOPhong();     // "  "  for second set of custom-shaded 3D parts
+
 
 // For animation:---------------------
 var g_lastMS = Date.now();			// Timestamp (in milliseconds) for our 
@@ -110,6 +116,13 @@ var g_posRate1 = 0.5;           // position change rate, in distance/second.
 var g_posMax1 =  1.0;           // max, min allowed positions
 var g_posMin1 = -1.0;
                                 //---------------
+
+var g_StringSin = 0.0; g_StringCos = 0.0;
+var g_StringSpeed = 0.01;
+var g_StringAngle = 0;
+var g_spiral_sin = 0;
+
+var g_stringpiece_sin = 0.0;
 
 // For mouse/keyboard:------------------------
 var g_show0 = 1;								// 0==Show, 1==Hide VBO0 contents on-screen.
@@ -179,7 +192,10 @@ function main() {
   worldBox.init(gl);		// VBO + shaders + uniforms + attribs for our 3D world,
                         // including ground-plane,                       
   part1Box.init(gl);		//  "		"		"  for 1st kind of shading & lighting
-	part2Box.init(gl);    //  "   "   "  for 2nd kind of shading & lighting
+  gouraudCreature.init(gl);	//  "		"		"  for 2nd kind of shading & lighting
+	gouraudString.init(gl);
+  gouraudSpiral.init(gl);
+  part2Box.init(gl);    //  "   "   "  for 2nd kind of shading & lighting
 	
   gl.clearColor(0.2, 0.2, 0.2, 1);	  // RGBA color for clearing <canvas>
 
@@ -211,6 +227,14 @@ function main() {
     g_vpAspect = ( g_canvasID.width) /
                 ( g_canvasID.height );
 
+    g_StringAngle += g_StringSpeed
+
+    g_StringSin = Math.sin(g_StringAngle);
+    g_StringCos = Math.cos(g_StringAngle);
+
+    g_stringpiece_sin = Math.sin(g_StringAngle * 10);
+    g_spiral_sin = Math.sin(g_StringAngle / 10);
+
     requestAnimationFrame(tick, g_canvasID); // browser callback request; wait
                                 // til browser is ready to re-draw canvas, then
     cameraTick();
@@ -222,7 +246,7 @@ function main() {
 }
 
 // thank you https://learnopengl.com/Getting-started/Camera
-var g_Camera = new Vector3([5.0, 0.0, 1.0]);
+var g_Camera = new Vector3([9.0, 0.0, 1.0]);
 var g_CameraFront = new Vector3([-1, 0, 0]);
 var g_CameraUp = new Vector3([0, 0, 1.0]);
 
@@ -428,6 +452,18 @@ var b4Wait = b4Draw - g_lastMS;
     part1Box.switchToMe();  // Set WebGL to render from this VBObox.
   	part1Box.adjust();		  // Send new values for uniforms to the GPU, and
   	part1Box.draw();			  // draw our VBO's contents using our shaders.
+
+    gouraudCreature.switchToMe();
+    gouraudCreature.adjust();
+    gouraudCreature.draw();
+
+    gouraudString.switchToMe();
+    gouraudString.adjust();
+    gouraudString.draw();
+
+    gouraudSpiral.switchToMe();
+    gouraudSpiral.adjust();
+    gouraudSpiral.draw();
 	  }
 	if(g_show2 == 1) { // IF user didn't press HTML button to 'hide' VBO2:
 	  part2Box.switchToMe();  // Set WebGL to render from this VBObox.

@@ -1,4 +1,4 @@
-function VBOPhong() {
+function VBOGouraudSpiral() {
   this.VERT_SRC =
   // @TODO: Try removing these lines and see what happens.
   'precision highp float;\n' +	
@@ -42,76 +42,44 @@ function VBOPhong() {
     // Varying
 
     "varying vec4 v_Color1;\n" +
-    "varying vec4 v_Position;\n" +
-    "varying vec3 v_Normal;\n" +
-    "varying vec3 v_Kd;\n" +
 
     // Shader
 
     "void main() {\n" +
     "  gl_Position = u_MvpMatrix1 * a_Position1;\n" +
-    "  v_Normal = normalize(vec3(u_NormalMatrix1 * a_Normal1));\n" +
-    "  v_Position = u_ModelMatrix1 * a_Position1;\n" +
-    "  v_Kd = u_MatlSet[0].diff;\n" +
+    "  vec3 normal = normalize(vec3(u_NormalMatrix1 * a_Normal1));\n" +
+    "  vec4 vertexPosition = u_ModelMatrix1 * a_Position1;\n" +
+    "  vec3 lightDirection = normalize(u_LampSet[0].pos - vec3(vertexPosition));\n" +
+    "  vec3 eyeDirection = normalize(u_eyePosWorld - vec3(vertexPosition));\n" +
+    "  float nDotL = max(dot(lightDirection, normal), 0.0);\n" +
+    "  float e64; \n " +
+    "  if(u_isBlinn == true) {\n" +
+    "    vec3 h = normalize(lightDirection + eyeDirection);\n" +
+    "    e64 = pow(max(dot(normal, h), 0.0), 64.0);\n" +
+    "  } else {\n" +
+    "    e64 = pow(max(dot(reflect(-lightDirection, normal), eyeDirection), 0.0), 64.0);\n" +
+    "  }\n" +
+    "  vec3 emissive = u_MatlSet[0].emit;\n" +
+    "  vec3 ambient = u_LampSet[0].ambi * u_MatlSet[0].ambi;\n" +
+    "  vec3 diffuse = u_LampSet[0].diff * u_MatlSet[0].diff * nDotL;\n" +
+    "  vec3 specular = u_LampSet[0].spec * u_MatlSet[0].spec * e64;\n" +
+    "  if(u_isLightOn == true) {" +
+    "  v_Color1 = vec4(emissive + ambient + diffuse + specular, 1.0);\n" +
+    "  } else {\n" +
+    "  v_Color1 = vec4(0, 0, 0, 1.0);\n" +
+      " } \n" +
     "}\n";
 
   this.FRAG_SRC =
-  'precision highp float;\n' +
-  'precision highp int;\n' +
+    "#ifdef GL_ES\n" +
+    "precision mediump float;\n" +
+    "#endif\n" +
+    "varying vec4 v_Color1;\n" +
+    "void main() {\n" +
+    "  gl_FragColor = v_Color1;\n" +
+    "}\n";
 
-  // GLSL Struct Definitions:
-  'struct LampT {\n' +		// Describes one point-like Phong light source
-  '		vec3 pos;\n' +			// (x,y,z,w); w==1.0 for local light at x,y,z position
-  ' 	vec3 ambi;\n' +			// Ia ==  ambient light source strength (r,g,b)
-  ' 	vec3 diff;\n' +			// Id ==  diffuse light source strength (r,g,b)
-  '		vec3 spec;\n' +			// Is == specular light source strength (r,g,b)
-  '}; \n' +
-
-  'struct MatlT {\n' +		// Describes one Phong material by its reflectances:
-  '		vec3 emit;\n' +			// Ke: emissive -- surface 'glow' amount (r,g,b);
-  '		vec3 ambi;\n' +			// Ka: ambient reflectance (r,g,b)
-  '		vec3 diff;\n' +			// Kd: diffuse reflectance (r,g,b)
-  '		vec3 spec;\n' + 		// Ks: specular reflectance (r,g,b)
-  '		int shiny;\n' +			// Kshiny: specular exponent (integer >= 1; typ. <200)
-  '};\n' +
-
-  // Uniforms
-  'uniform LampT u_LampSet[1];\n' +		// Array of all light sources.
-	'uniform MatlT u_MatlSet[1];\n' +		// Array of all materials.
-  'uniform vec3 u_eyePosWorld; \n' + 	// Camera/eye location in world coords.
-
-  'uniform bool u_isBlinn; \n' +			// true==use Blinn, false==use Phong
-  'uniform bool u_isLightOn; \n' +
-
-  'varying vec3 v_Normal;\n' +				// Find 3D surface normal at each pix
-  'varying vec4 v_Position;\n' +			// pixel's 3D pos too -- in 'world' coords
-  'varying vec3 v_Kd;	\n' +						// Find diffuse reflectance K_d per pix
-  'void main() { \n' +
-  '  vec3 normal = normalize(v_Normal); \n' +
-  '  vec3 lightDirection = normalize(u_LampSet[0].pos - v_Position.xyz);\n' +
-  '  vec3 eyeDirection = normalize(u_eyePosWorld - v_Position.xyz); \n' +
-  '  float nDotL = max(dot(lightDirection, normal), 0.0); \n' +
-  "  float e64; \n " +
-  "  if(u_isBlinn == true) {\n" +
-  "    vec3 h = normalize(lightDirection + eyeDirection);\n" +
-  "    e64 = pow(max(dot(normal, h), 0.0), 64.0);\n" +
-  "  } else {\n" +
-  "    e64 = pow(max(dot(reflect(-lightDirection, normal), eyeDirection), 0.0), 64.0);\n" +
-  "  }\n" +
-  // Calculate the final color from diffuse reflection and ambient reflection
-  //  '	 vec3 emissive = u_Ke;' +
-  '	 vec3 emissive = 										u_MatlSet[0].emit;' +
-  '  vec3 ambient = u_LampSet[0].ambi * u_MatlSet[0].ambi;\n' +
-  '  vec3 diffuse = u_LampSet[0].diff * v_Kd * nDotL;\n' +
-  '	 vec3 speculr = u_LampSet[0].spec * u_MatlSet[0].spec * e64;\n' +
-  '  if (u_isLightOn == true) {\n' +
-  '    gl_FragColor = vec4(emissive + ambient + diffuse + speculr , 1.0);\n' +
-  '  } else {\n' +
-  '    gl_FragColor = vec4(0.0, 0.0, 0.0, 1.0);\n' +
-  '  }\n' +
-  '}\n';
-
-  this.vboContents = g_mdl_sphere;
+  this.vboContents = g_mdl_string;
   this.FSIZE = this.vboContents.BYTES_PER_ELEMENT;
 
   this.vboVerts = this.vboContents.length / 7;
@@ -126,7 +94,7 @@ function VBOPhong() {
   console.assert(
     (this.vboFcount_a_Pos1 + this.vboFcount_a_Colr1) * this.FSIZE ==
       this.vboStride,
-    "Uh oh! VBOPhong.vboStride disagrees with attribute-size values!"
+    "Uh oh! VBOGouraudSpiral.vboStride disagrees with attribute-size values!"
   );
 
   this.vboOffset_a_Pos1 = 0;
@@ -140,10 +108,10 @@ function VBOPhong() {
   this.NormalMatrix1 = new Matrix4();
 
   this.light0 = new LightsT();
-  this.matl0 = new Material(MATL_RED_PLASTIC);
+  this.matl0 = new Material(MATL_GOLD_SHINY);
 }
 
-VBOPhong.prototype.init = function () {
+VBOGouraudSpiral.prototype.init = function () {
   this.locs["shader"] = createProgram(gl, this.VERT_SRC, this.FRAG_SRC);
   if (!this.locs["shader"]) {
     console.log(
@@ -207,7 +175,7 @@ VBOPhong.prototype.init = function () {
   this.assignUniformLoc(gl, "u_LampSet[0].spec");
 };
 
-VBOPhong.prototype.switchToMe = function () {
+VBOGouraudSpiral.prototype.switchToMe = function () {
   gl.useProgram(this.locs["shader"]);
 
   gl.bindBuffer(gl.ARRAY_BUFFER, this.locs["vbo"]);
@@ -250,9 +218,6 @@ VBOPhong.prototype.switchToMe = function () {
   gl.uniform3fv(this.locs["u_LampSet[0].diff"], this.light0.I_diff.elements);
   gl.uniform3fv(this.locs["u_LampSet[0].spec"], this.light0.I_spec.elements);
 
-  // Material 0:
-  this.matl0 = g_selectedMaterial;
-
   gl.uniform3fv(this.locs["u_MatlSet[0].emit"], this.matl0.K_emit.slice(0, 3));
   gl.uniform3fv(this.locs["u_MatlSet[0].ambi"], this.matl0.K_ambi.slice(0, 3));
   gl.uniform3fv(this.locs["u_MatlSet[0].diff"], this.matl0.K_diff.slice(0, 3));
@@ -264,7 +229,7 @@ VBOPhong.prototype.switchToMe = function () {
   gl.uniform3fv(this.locs["u_eyePosWorld"], g_Camera.elements.slice(0, 3));
 };
 
-VBOPhong.prototype.isReady = function () {
+VBOGouraudSpiral.prototype.isReady = function () {
   var isOK = true;
 
   if (gl.getParameter(gl.CURRENT_PROGRAM) != this.locs["shader"]) {
@@ -284,7 +249,7 @@ VBOPhong.prototype.isReady = function () {
   return isOK;
 };
 
-VBOPhong.prototype.adjust = function () {
+VBOGouraudSpiral.prototype.adjust = function () {
   if (this.isReady() == false) {
     console.log(
       "ERROR! before" +
@@ -294,7 +259,8 @@ VBOPhong.prototype.adjust = function () {
   }
 
   this.ModelMatrix1.setIdentity();
-  this.ModelMatrix1.rotate(g_angleNow0, 0, 0, 1);
+  this.ModelMatrix1.translate(-1, 1, 0.4);
+  this.ModelMatrix1.rotate(90, 1, 0, 0);
   gl.uniformMatrix4fv(
     this.locs["u_ModelMatrix1"],
     false,
@@ -318,7 +284,7 @@ VBOPhong.prototype.adjust = function () {
   );
 };
 
-VBOPhong.prototype.draw = function () {
+VBOGouraudSpiral.prototype.draw = function () {
   if (this.isReady() == false) {
     console.log(
       "ERROR! before" +
@@ -327,14 +293,15 @@ VBOPhong.prototype.draw = function () {
     );
   }
 
-  gl.drawArrays(
-    gl.TRIANGLES,
-    0,
-    this.vboVerts
-  );
+  this.drawSpiral(5);
+  // gl.drawArrays(
+  //   gl.TRIANGLES,
+  //   0,
+  //   this.vboVerts
+  // );
 };
 
-VBOPhong.prototype.reload = function () {
+VBOGouraudSpiral.prototype.reload = function () {
   gl.bufferSubData(
     gl.ARRAY_BUFFER,
     0,
@@ -342,7 +309,7 @@ VBOPhong.prototype.reload = function () {
   );
 };
 
-VBOPhong.prototype.assignUniformLoc = function (gl, uniform) {
+VBOGouraudSpiral.prototype.assignUniformLoc = function (gl, uniform) {
   var u_uniform = gl.getUniformLocation(gl.program, uniform);
   if (!u_uniform) {
     console.log("Failed to get the storage location of " + uniform);
@@ -350,4 +317,54 @@ VBOPhong.prototype.assignUniformLoc = function (gl, uniform) {
   }
   this.locs[uniform] = u_uniform;
   return true;
+};
+
+VBOGouraudSpiral.prototype.drawSpiral = function(numRevolutions) {
+  pushMatrix(this.ModelMatrix1);
+  
+  this.ModelMatrix1.translate(-5, 2, 1);
+  this.ModelMatrix1.scale(0.3, 0.3, 0.3);
+  
+  var drawStringpiece = (recursionsLeft, rotation) => {
+    pushMatrix(this.ModelMatrix1);
+
+    this.ModelMatrix1.translate(0, -1, 0);
+    this.ModelMatrix1.rotate(rotation * g_spiral_sin, 1, 0, 1);
+
+    this.MvpMatrix1.set(g_worldMat);
+    this.MvpMatrix1.multiply(this.ModelMatrix1);
+    gl.uniformMatrix4fv(
+      this.locs["u_MvpMatrix1"],
+      false,
+      this.MvpMatrix1.elements
+    );
+
+    this.NormalMatrix1.setInverseOf(this.ModelMatrix1);
+    this.NormalMatrix1.transpose();
+    gl.uniformMatrix4fv(
+      this.locs["u_NormalMatrix1"],
+      false,
+      this.NormalMatrix1.elements
+    );
+
+    gl.uniformMatrix4fv(
+      this.locs["u_ModelMatrix1"],
+      false,
+      this.ModelMatrix1.elements
+    );
+    gl.drawArrays(gl.TRIANGLES, 0, this.vboVerts);
+
+    if (recursionsLeft > 0) {
+      this.ModelMatrix1.translate(0, -0.8, 0);
+      drawStringpiece(recursionsLeft - 1, rotation);
+    }
+
+    this.ModelMatrix1 = popMatrix();
+  };
+
+  for (var i = 0; i < numRevolutions; i++) {
+    drawStringpiece(2, 360 * (i / numRevolutions));
+  }
+
+  this.ModelMatrix1 = popMatrix();
 };
