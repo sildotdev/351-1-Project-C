@@ -255,7 +255,7 @@ function moveCameraRight(positive) {
 }
 
 function pitchCamera(positive) {
-    var speed = 0.02;
+    var speed = 0.015;
     if (!positive) {
 	    speed = -speed;
     }
@@ -326,7 +326,7 @@ function cameraTick() {
   }
 
   g_worldMat.setIdentity();
-  g_worldMat.perspective(45.0,   
+  g_worldMat.perspective(30.0,   
     g_canvasID.width / g_canvasID.height,   
     1.0,   
     200.0);  
