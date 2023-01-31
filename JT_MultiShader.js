@@ -80,7 +80,7 @@ var g_canvasID;									// HTML-5 'canvas' element ID#
 // For multiple VBOs & Shaders:-----------------
 worldBox = new VBObox0();		  // Holds VBO & shaders for 3D 'world' ground-plane grid, etc;
 part1Box = new VBOGouraud();		  // "  "  for first set of custom-shaded 3D parts
-part2Box = new VBObox2();     // "  "  for second set of custom-shaded 3D parts
+part2Box = new VBOPhong();     // "  "  for second set of custom-shaded 3D parts
 
 // For animation:---------------------
 var g_lastMS = Date.now();			// Timestamp (in milliseconds) for our 
@@ -113,8 +113,9 @@ var g_posMin1 = -1.0;
 
 // For mouse/keyboard:------------------------
 var g_show0 = 1;								// 0==Show, 1==Hide VBO0 contents on-screen.
-var g_show1 = 1;								// 	"					"			VBO1		"				"				" 
-var g_show2 = 0;                //  "         "     VBO2    "       "       "
+// @TODO: g_show1 = 1; g_show2 = 0;
+var g_show1 = 0;								// 	"					"			VBO1		"				"				" 
+var g_show2 = 1;                //  "         "     VBO2    "       "       "
 
 var g_vpAspect = 1;
 
@@ -417,8 +418,18 @@ function VBO2toggle() {
 function changeShader() {
   var selectValue = document.getElementById("shaderSelect").value;
 
-  console.log(selectValue)
-
+  switch (selectValue) {
+    case "phong":
+      g_show0 = 1;
+      g_show1 = 0;
+      g_show2 = 1;
+      break;
+    case "gouraud":
+      g_show0 = 1;
+      g_show1 = 1;
+      g_show2 = 0;
+      break;
+  }
 }
 
 function changeLighting() {
