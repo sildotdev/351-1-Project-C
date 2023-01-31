@@ -10,7 +10,7 @@ function VBObox1() {
     "uniform vec3 u_AmbientLight1;\n" +
     "varying vec4 v_Color1;\n" +
     "void main() {\n" +
-    "  vec4 color = vec4(0.2, 1.0, 0.2, 1.0);\n" +
+    "  vec4 color = vec4(0.2, 0.2, 1.0, 1.0);\n" +
     "  gl_Position = u_MvpMatrix1 * a_Position1;\n" +
     "  vec3 normal = normalize(vec3(u_NormalMatrix1 * a_Normal1));\n" +
     "  vec4 vertexPosition = u_ModelMatrix1 * a_Position1;\n" +
@@ -207,19 +207,6 @@ VBObox1.prototype.adjust = function () {
     this.ModelMatrix1.elements
   );
 
-  // this.MvpMatrix1.setLookAt(
-  //   g_Camera.elements[0],
-  //   g_Camera.elements[1],
-  //   g_Camera.elements[2],
-  //   g_Camera.elements[0] + g_CameraFront.elements[0],
-  //   g_Camera.elements[1] + g_CameraFront.elements[1],
-  //   g_Camera.elements[2] + g_CameraFront.elements[2],
-  //   g_CameraUp.elements[0],
-  //   g_CameraUp.elements[1],
-  //   g_CameraUp.elements[2]
-  // );
-
-  console.log( g_Camera )
   this.MvpMatrix1.setPerspective( 60, g_vpAspect, 1, 100 );
   this.MvpMatrix1.lookAt(
     g_Camera.elements[0],
@@ -232,7 +219,6 @@ VBObox1.prototype.adjust = function () {
     g_CameraUp.elements[1],
     g_CameraUp.elements[2]
   );
-  // this.MvpMatrix1.lookAt( 0, 5, 0, 0, 0, 0, 0, 0, 1 );
   this.MvpMatrix1.multiply(this.ModelMatrix1);
   gl.uniformMatrix4fv(
     this.locs["u_MvpMatrix1"],
