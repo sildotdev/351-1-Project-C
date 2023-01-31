@@ -569,8 +569,6 @@ VBOGouraud.prototype.init = function () {
   this.assignUniformLoc(gl, "u_MatlSet[0].spec");
   this.assignUniformLoc(gl, "u_MatlSet[0].shiny");
 
-  let wtf = gl.getUniformLocation(gl.program, "u_LampSet[0].pos");
-  console.log(wtf);
 
   // Lamp property values:
   this.assignUniformLoc(gl, "u_LampSet[0].pos");
@@ -892,8 +890,6 @@ VBOGouraudCreature.prototype.init = function () {
   this.assignUniformLoc(gl, "u_MatlSet[0].spec");
   this.assignUniformLoc(gl, "u_MatlSet[0].shiny");
 
-  let wtf = gl.getUniformLocation(gl.program, "u_LampSet[0].pos");
-  console.log(wtf);
 
   // Lamp property values:
   this.assignUniformLoc(gl, "u_LampSet[0].pos");
@@ -1275,8 +1271,6 @@ VBOGouraudSpiral.prototype.init = function () {
   this.assignUniformLoc(gl, "u_MatlSet[0].spec");
   this.assignUniformLoc(gl, "u_MatlSet[0].shiny");
 
-  let wtf = gl.getUniformLocation(gl.program, "u_LampSet[0].pos");
-  console.log(wtf);
 
   // Lamp property values:
   this.assignUniformLoc(gl, "u_LampSet[0].pos");
@@ -1646,8 +1640,6 @@ VBOGouraudString.prototype.init = function () {
   this.assignUniformLoc(gl, "u_MatlSet[0].spec");
   this.assignUniformLoc(gl, "u_MatlSet[0].shiny");
 
-  let wtf = gl.getUniformLocation(gl.program, "u_LampSet[0].pos");
-  console.log(wtf);
 
   // Lamp property values:
   this.assignUniformLoc(gl, "u_LampSet[0].pos");
@@ -2045,8 +2037,6 @@ VBOPhong.prototype.init = function () {
   this.assignUniformLoc(gl, "u_MatlSet[0].spec");
   this.assignUniformLoc(gl, "u_MatlSet[0].shiny");
 
-  let wtf = gl.getUniformLocation(gl.program, "u_LampSet[0].pos");
-  console.log(wtf);
 
   // Lamp property values:
   this.assignUniformLoc(gl, "u_LampSet[0].pos");
@@ -2399,8 +2389,6 @@ VBOPhongCreature.prototype.init = function () {
   this.assignUniformLoc(gl, "u_MatlSet[0].spec");
   this.assignUniformLoc(gl, "u_MatlSet[0].shiny");
 
-  let wtf = gl.getUniformLocation(gl.program, "u_LampSet[0].pos");
-  console.log(wtf);
 
   // Lamp property values:
   this.assignUniformLoc(gl, "u_LampSet[0].pos");
@@ -2818,8 +2806,6 @@ VBOPhongSpiral.prototype.init = function () {
   this.assignUniformLoc(gl, "u_MatlSet[0].spec");
   this.assignUniformLoc(gl, "u_MatlSet[0].shiny");
 
-  let wtf = gl.getUniformLocation(gl.program, "u_LampSet[0].pos");
-  console.log(wtf);
 
   // Lamp property values:
   this.assignUniformLoc(gl, "u_LampSet[0].pos");
@@ -3221,8 +3207,6 @@ VBOPhongString.prototype.init = function () {
   this.assignUniformLoc(gl, "u_MatlSet[0].spec");
   this.assignUniformLoc(gl, "u_MatlSet[0].shiny");
 
-  let wtf = gl.getUniformLocation(gl.program, "u_LampSet[0].pos");
-  console.log(wtf);
 
   // Lamp property values:
   this.assignUniformLoc(gl, "u_LampSet[0].pos");
