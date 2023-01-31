@@ -87,6 +87,8 @@ gouraudSpiral = new VBOGouraudSpiral();
 
 part2Box = new VBOPhong();     // "  "  for second set of custom-shaded 3D parts
 phongCreature = new VBOPhongCreature();
+phongString = new VBOPhongString();
+phongSpiral = new VBOPhongSpiral();
 
 // For animation:---------------------
 var g_lastMS = Date.now();			// Timestamp (in milliseconds) for our 
@@ -197,6 +199,8 @@ function main() {
   gouraudSpiral.init(gl);
   part2Box.init(gl);    //  "   "   "  for 2nd kind of shading & lighting
 	phongCreature.init(gl);
+  phongString.init(gl);
+  phongSpiral.init(gl);
   gl.clearColor(0.2, 0.2, 0.2, 1);	  // RGBA color for clearing <canvas>
 
   var xtraMargin = 16;
@@ -473,6 +477,14 @@ var b4Wait = b4Draw - g_lastMS;
     phongCreature.switchToMe();
     phongCreature.adjust();
     phongCreature.draw();
+
+    phongString.switchToMe();
+    phongString.adjust();
+    phongString.draw();
+
+    phongSpiral.switchToMe();
+    phongSpiral.adjust();
+    phongSpiral.draw();
   	}
 /* // ?How slow is our own code?  	
 var aftrDraw = Date.now();

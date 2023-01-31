@@ -1,4 +1,4 @@
-function VBOPhongCreature() {
+function VBOPhongSpiral() {
   this.VERT_SRC =
   // @TODO: Try removing these lines and see what happens.
   'precision highp float;\n' +	
@@ -126,7 +126,7 @@ function VBOPhongCreature() {
   console.assert(
     (this.vboFcount_a_Pos1 + this.vboFcount_a_Colr1) * this.FSIZE ==
       this.vboStride,
-    "Uh oh! VBOPhongCreature.vboStride disagrees with attribute-size values!"
+    "Uh oh! VBOPhongSpiral.vboStride disagrees with attribute-size values!"
   );
 
   this.vboOffset_a_Pos1 = 0;
@@ -140,10 +140,10 @@ function VBOPhongCreature() {
   this.NormalMatrix1 = new Matrix4();
 
   this.light0 = new LightsT();
-  this.matl0 = new Material(MATL_OBSIDIAN);
+  this.matl0 = new Material(MATL_GOLD_SHINY);
 }
 
-VBOPhongCreature.prototype.init = function () {
+VBOPhongSpiral.prototype.init = function () {
   this.locs["shader"] = createProgram(gl, this.VERT_SRC, this.FRAG_SRC);
   if (!this.locs["shader"]) {
     console.log(
@@ -207,7 +207,7 @@ VBOPhongCreature.prototype.init = function () {
   this.assignUniformLoc(gl, "u_LampSet[0].spec");
 };
 
-VBOPhongCreature.prototype.switchToMe = function () {
+VBOPhongSpiral.prototype.switchToMe = function () {
   gl.useProgram(this.locs["shader"]);
 
   gl.bindBuffer(gl.ARRAY_BUFFER, this.locs["vbo"]);
@@ -250,9 +250,6 @@ VBOPhongCreature.prototype.switchToMe = function () {
   gl.uniform3fv(this.locs["u_LampSet[0].diff"], this.light0.I_diff.elements);
   gl.uniform3fv(this.locs["u_LampSet[0].spec"], this.light0.I_spec.elements);
 
-  // Material 0:
-  // this.matl0 = g_selectedMaterial;
-
   gl.uniform3fv(this.locs["u_MatlSet[0].emit"], this.matl0.K_emit.slice(0, 3));
   gl.uniform3fv(this.locs["u_MatlSet[0].ambi"], this.matl0.K_ambi.slice(0, 3));
   gl.uniform3fv(this.locs["u_MatlSet[0].diff"], this.matl0.K_diff.slice(0, 3));
@@ -264,7 +261,7 @@ VBOPhongCreature.prototype.switchToMe = function () {
   gl.uniform3fv(this.locs["u_eyePosWorld"], g_Camera.elements.slice(0, 3));
 };
 
-VBOPhongCreature.prototype.isReady = function () {
+VBOPhongSpiral.prototype.isReady = function () {
   var isOK = true;
 
   if (gl.getParameter(gl.CURRENT_PROGRAM) != this.locs["shader"]) {
@@ -284,7 +281,7 @@ VBOPhongCreature.prototype.isReady = function () {
   return isOK;
 };
 
-VBOPhongCreature.prototype.adjust = function () {
+VBOPhongSpiral.prototype.adjust = function () {
   if (this.isReady() == false) {
     console.log(
       "ERROR! before" +
@@ -319,7 +316,7 @@ VBOPhongCreature.prototype.adjust = function () {
   );
 };
 
-VBOPhongCreature.prototype.draw = function () {
+VBOPhongSpiral.prototype.draw = function () {
   if (this.isReady() == false) {
     console.log(
       "ERROR! before" +
@@ -328,8 +325,7 @@ VBOPhongCreature.prototype.draw = function () {
     );
   }
 
-  this.drawStringpiece(3);
-
+  this.drawSpiral(5);
   // gl.drawArrays(
   //   gl.TRIANGLES,
   //   0,
@@ -337,7 +333,7 @@ VBOPhongCreature.prototype.draw = function () {
   // );
 };
 
-VBOPhongCreature.prototype.reload = function () {
+VBOPhongSpiral.prototype.reload = function () {
   gl.bufferSubData(
     gl.ARRAY_BUFFER,
     0,
@@ -345,7 +341,7 @@ VBOPhongCreature.prototype.reload = function () {
   );
 };
 
-VBOPhongCreature.prototype.assignUniformLoc = function (gl, uniform) {
+VBOPhongSpiral.prototype.assignUniformLoc = function (gl, uniform) {
   var u_uniform = gl.getUniformLocation(gl.program, uniform);
   if (!u_uniform) {
     console.log("Failed to get the storage location of " + uniform);
@@ -355,17 +351,17 @@ VBOPhongCreature.prototype.assignUniformLoc = function (gl, uniform) {
   return true;
 };
 
-VBOPhongCreature.prototype.drawStringpiece = function(numRecurse) {
-	pushMatrix(this.ModelMatrix1)
+VBOPhongSpiral.prototype.drawSpiral = function(numRevolutions) {
+  pushMatrix(this.ModelMatrix1);
+  
+  this.ModelMatrix1.translate(-5, 2, 1);
+  this.ModelMatrix1.scale(0.3, 0.3, 0.3);
+  
+  var drawStringpiece = (recursionsLeft, rotation) => {
+    pushMatrix(this.ModelMatrix1);
 
-	this.ModelMatrix1.translate(0, 0, 4);
-  this.ModelMatrix1.rotate(90, 1, 0, 0);
-	this.ModelMatrix1.scale(0.5,0.5,0.5);
-
-	var recurse = (recursionsLeft, endBit) => {
-		pushMatrix(this.ModelMatrix1)
-
-		this.ModelMatrix1.translate(0, -1, 0)
+    this.ModelMatrix1.translate(0, -1, 0);
+    this.ModelMatrix1.rotate(rotation * g_spiral_sin, 1, 0, 1);
 
     this.MvpMatrix1.set(g_worldMat);
     this.MvpMatrix1.multiply(this.ModelMatrix1);
@@ -374,7 +370,7 @@ VBOPhongCreature.prototype.drawStringpiece = function(numRecurse) {
       false,
       this.MvpMatrix1.elements
     );
-  
+
     this.NormalMatrix1.setInverseOf(this.ModelMatrix1);
     this.NormalMatrix1.transpose();
     gl.uniformMatrix4fv(
@@ -383,36 +379,24 @@ VBOPhongCreature.prototype.drawStringpiece = function(numRecurse) {
       this.NormalMatrix1.elements
     );
 
-		gl.uniformMatrix4fv(this.locs["u_ModelMatrix1"], false, this.ModelMatrix1.elements);
-		gl.drawArrays(gl.TRIANGLES, 0, this.vboVerts);
+    gl.uniformMatrix4fv(
+      this.locs["u_ModelMatrix1"],
+      false,
+      this.ModelMatrix1.elements
+    );
+    gl.drawArrays(gl.TRIANGLES, 0, this.vboVerts);
 
-		if (recursionsLeft > 0) {
-			this.ModelMatrix1.translate(0, -0.8, 0)
-			this.ModelMatrix1.rotate(60.0 * g_StringSin, 0,0,1);
-      this.ModelMatrix1.rotate(15.0 * g_StringCos, 0,1,0);
-
-      pushMatrix(this.ModelMatrix1)
-
-      this.ModelMatrix1 = popMatrix(this.ModelMatrix1)
-
-			recurse(recursionsLeft - 1, endBit)
-		}
-    
-    if (!endBit) {
-      pushMatrix(this.ModelMatrix1)
-      this.ModelMatrix1.scale(1, 1, 1)
-      this.ModelMatrix1.translate(1, 0, 0)
-      this.ModelMatrix1.rotate(90, 1, 0, 0)
-      recurse(2, true)
-      this.ModelMatrix1 = popMatrix(this.ModelMatrix1)
+    if (recursionsLeft > 0) {
+      this.ModelMatrix1.translate(0, -0.8, 0);
+      drawStringpiece(recursionsLeft - 1, rotation);
     }
 
-		this.ModelMatrix1 = popMatrix()
-	}
+    this.ModelMatrix1 = popMatrix();
+  };
 
-	if (numRecurse > 0) {
-		recurse(numRecurse - 1, false)
+  for (var i = 0; i < numRevolutions; i++) {
+    drawStringpiece(2, 360 * (i / numRevolutions));
   }
 
-	this.ModelMatrix1 = popMatrix()
-}
+  this.ModelMatrix1 = popMatrix();
+};

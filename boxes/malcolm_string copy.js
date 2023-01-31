@@ -1,4 +1,4 @@
-function VBOPhongCreature() {
+function VBOPhongString() {
   this.VERT_SRC =
   // @TODO: Try removing these lines and see what happens.
   'precision highp float;\n' +	
@@ -126,7 +126,7 @@ function VBOPhongCreature() {
   console.assert(
     (this.vboFcount_a_Pos1 + this.vboFcount_a_Colr1) * this.FSIZE ==
       this.vboStride,
-    "Uh oh! VBOPhongCreature.vboStride disagrees with attribute-size values!"
+    "Uh oh! VBOPhongString.vboStride disagrees with attribute-size values!"
   );
 
   this.vboOffset_a_Pos1 = 0;
@@ -140,10 +140,10 @@ function VBOPhongCreature() {
   this.NormalMatrix1 = new Matrix4();
 
   this.light0 = new LightsT();
-  this.matl0 = new Material(MATL_OBSIDIAN);
+  this.matl0 = new Material(MATL_GRN_PLASTIC);
 }
 
-VBOPhongCreature.prototype.init = function () {
+VBOPhongString.prototype.init = function () {
   this.locs["shader"] = createProgram(gl, this.VERT_SRC, this.FRAG_SRC);
   if (!this.locs["shader"]) {
     console.log(
@@ -207,7 +207,7 @@ VBOPhongCreature.prototype.init = function () {
   this.assignUniformLoc(gl, "u_LampSet[0].spec");
 };
 
-VBOPhongCreature.prototype.switchToMe = function () {
+VBOPhongString.prototype.switchToMe = function () {
   gl.useProgram(this.locs["shader"]);
 
   gl.bindBuffer(gl.ARRAY_BUFFER, this.locs["vbo"]);
@@ -250,9 +250,6 @@ VBOPhongCreature.prototype.switchToMe = function () {
   gl.uniform3fv(this.locs["u_LampSet[0].diff"], this.light0.I_diff.elements);
   gl.uniform3fv(this.locs["u_LampSet[0].spec"], this.light0.I_spec.elements);
 
-  // Material 0:
-  // this.matl0 = g_selectedMaterial;
-
   gl.uniform3fv(this.locs["u_MatlSet[0].emit"], this.matl0.K_emit.slice(0, 3));
   gl.uniform3fv(this.locs["u_MatlSet[0].ambi"], this.matl0.K_ambi.slice(0, 3));
   gl.uniform3fv(this.locs["u_MatlSet[0].diff"], this.matl0.K_diff.slice(0, 3));
@@ -264,7 +261,7 @@ VBOPhongCreature.prototype.switchToMe = function () {
   gl.uniform3fv(this.locs["u_eyePosWorld"], g_Camera.elements.slice(0, 3));
 };
 
-VBOPhongCreature.prototype.isReady = function () {
+VBOPhongString.prototype.isReady = function () {
   var isOK = true;
 
   if (gl.getParameter(gl.CURRENT_PROGRAM) != this.locs["shader"]) {
@@ -284,7 +281,7 @@ VBOPhongCreature.prototype.isReady = function () {
   return isOK;
 };
 
-VBOPhongCreature.prototype.adjust = function () {
+VBOPhongString.prototype.adjust = function () {
   if (this.isReady() == false) {
     console.log(
       "ERROR! before" +
@@ -319,7 +316,7 @@ VBOPhongCreature.prototype.adjust = function () {
   );
 };
 
-VBOPhongCreature.prototype.draw = function () {
+VBOPhongString.prototype.draw = function () {
   if (this.isReady() == false) {
     console.log(
       "ERROR! before" +
@@ -328,8 +325,7 @@ VBOPhongCreature.prototype.draw = function () {
     );
   }
 
-  this.drawStringpiece(3);
-
+  this.drawStringpiece(5);
   // gl.drawArrays(
   //   gl.TRIANGLES,
   //   0,
@@ -337,7 +333,7 @@ VBOPhongCreature.prototype.draw = function () {
   // );
 };
 
-VBOPhongCreature.prototype.reload = function () {
+VBOPhongString.prototype.reload = function () {
   gl.bufferSubData(
     gl.ARRAY_BUFFER,
     0,
@@ -345,7 +341,7 @@ VBOPhongCreature.prototype.reload = function () {
   );
 };
 
-VBOPhongCreature.prototype.assignUniformLoc = function (gl, uniform) {
+VBOPhongString.prototype.assignUniformLoc = function (gl, uniform) {
   var u_uniform = gl.getUniformLocation(gl.program, uniform);
   if (!u_uniform) {
     console.log("Failed to get the storage location of " + uniform);
@@ -355,14 +351,13 @@ VBOPhongCreature.prototype.assignUniformLoc = function (gl, uniform) {
   return true;
 };
 
-VBOPhongCreature.prototype.drawStringpiece = function(numRecurse) {
+VBOPhongString.prototype.drawStringpiece = function(numRecurse) {
 	pushMatrix(this.ModelMatrix1)
 
-	this.ModelMatrix1.translate(0, 0, 4);
-  this.ModelMatrix1.rotate(90, 1, 0, 0);
-	this.ModelMatrix1.scale(0.5,0.5,0.5);
+	this.ModelMatrix1.translate(0, 3, 0);
+	this.ModelMatrix1.scale(0.3,0.3,0.3);
 
-	var recurse = (recursionsLeft, endBit) => {
+	var recurse = (recursionsLeft) => {
 		pushMatrix(this.ModelMatrix1)
 
 		this.ModelMatrix1.translate(0, -1, 0)
@@ -388,31 +383,16 @@ VBOPhongCreature.prototype.drawStringpiece = function(numRecurse) {
 
 		if (recursionsLeft > 0) {
 			this.ModelMatrix1.translate(0, -0.8, 0)
-			this.ModelMatrix1.rotate(60.0 * g_StringSin, 0,0,1);
-      this.ModelMatrix1.rotate(15.0 * g_StringCos, 0,1,0);
-
-      pushMatrix(this.ModelMatrix1)
-
-      this.ModelMatrix1 = popMatrix(this.ModelMatrix1)
-
-			recurse(recursionsLeft - 1, endBit)
+			this.ModelMatrix1.rotate(20.0 * g_stringpiece_sin, 1,0,1);
+			recurse(recursionsLeft - 1)
 		}
-    
-    if (!endBit) {
-      pushMatrix(this.ModelMatrix1)
-      this.ModelMatrix1.scale(1, 1, 1)
-      this.ModelMatrix1.translate(1, 0, 0)
-      this.ModelMatrix1.rotate(90, 1, 0, 0)
-      recurse(2, true)
-      this.ModelMatrix1 = popMatrix(this.ModelMatrix1)
-    }
 
 		this.ModelMatrix1 = popMatrix()
 	}
 
 	if (numRecurse > 0) {
-		recurse(numRecurse - 1, false)
-  }
+		recurse(numRecurse - 1)
+	}
 
 	this.ModelMatrix1 = popMatrix()
 }
