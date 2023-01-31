@@ -40,7 +40,28 @@
         <option value="MATL_JADE">Jade</option>
         <option value="MATL_TURQUOISE">Turquoise</option>
       </select>
+
+      <!-- Lightswitch Checkbox -->
+      <input type="checkbox" id="lightSwitch" onchange="changeLightSwitch()" checked>Light
     </p>
+
+    <h2>Light</h2>
+    <div>
+      <h3>Position</h3>
+      <label for="lightX">X</label>
+      <input type="range" id="lightX" min="-10" max="10" step="0.1" value="0" onchange="changeLightX()" oninput="changeLightX()">
+      <input type="number" id="lightXValue" min="-10" max="10" step="0.1" value="0" onchange="changeLightX(true)" oninput="changeLightX(true)">
+      <br>
+      <label for="lightX">Y</label>
+      <input type="range" id="lightY" min="-10" max="10" step="0.1" value="0" onchange="changeLightY()" oninput="changeLightY()">
+      <input type="number" id="lightYValue" min="-10" max="10" step="0.1" value="0" onchange="changeLightY(true)" oninput="changeLightY(true)">
+      <br>
+      <label for="lightX">Z</label>
+      <input type="range" id="lightZ" min="-10" max="10" step="0.1" value="0" onchange="changeLightZ()" oninput="changeLightZ()">
+      <input type="number" id="lightZValue" min="-10" max="10" step="0.1" value="0" onchange="changeLightZ(true)" oninput="changeLightZ(true)">
+      <br>
+    </div>
+
     <script src="models/sphere.js"></script>
     <script src="lib/webgl-utils.js"></script>
     <script src="lib/webgl-debug.js"></script>
@@ -52,6 +73,7 @@
 		<script src="JT_VBObox-Lib.js"></script>
     <script src="boxes/vbobox0.js"></script>
     <script src="boxes/vbobox1.js"></script>
+    <script src="boxes/vbobox2.js"></script>
     <script src="JT_MultiShader.js"></script>
   </body>
 </html>

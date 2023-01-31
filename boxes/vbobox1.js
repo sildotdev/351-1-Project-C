@@ -1,4 +1,4 @@
-function VBObox1() {
+function VBOGouraud() {
   this.VERT_SRC =
   // @TODO: Try removing these lines and see what happens.
   'precision highp float;\n' +	
@@ -30,6 +30,7 @@ function VBObox1() {
 
     'uniform vec3 u_eyePosWorld; \n' + 	// Camera/eye location in world coords.
     'uniform bool u_isBlinn; \n' +			// true==use Blinn, false==use Phong
+    'uniform bool u_isLightOn; \n' +
     'uniform LampT u_LampSet[1]; \n' +		// Array of all light sources.
     'uniform MatlT u_MatlSet[1]; \n' +		// Array of all materials.
 
@@ -45,7 +46,6 @@ function VBObox1() {
     // Shader
 
     "void main() {\n" +
-    "  vec4 color = vec4(0.2, 0.2, 1.0, 1.0);\n" +
     "  gl_Position = u_MvpMatrix1 * a_Position1;\n" +
     "  vec3 normal = normalize(vec3(u_NormalMatrix1 * a_Normal1));\n" +
     "  vec4 vertexPosition = u_ModelMatrix1 * a_Position1;\n" +
@@ -63,7 +63,11 @@ function VBObox1() {
     "  vec3 ambient = u_LampSet[0].ambi * u_MatlSet[0].ambi;\n" +
     "  vec3 diffuse = u_LampSet[0].diff * u_MatlSet[0].diff * nDotL;\n" +
     "  vec3 specular = u_LampSet[0].spec * u_MatlSet[0].spec * e64;\n" +
-    "  v_Color1 = vec4(emissive + ambient + diffuse + specular, color.a);\n" +
+    "  if(u_isLightOn == true) {" +
+    "  v_Color1 = vec4(emissive + ambient + diffuse + specular, 1.0);\n" +
+    "  } else {\n" +
+    "  v_Color1 = vec4(0, 0, 0, 1.0);\n" +
+      " } \n" +
     "}\n";
 
   this.FRAG_SRC =
@@ -90,7 +94,7 @@ function VBObox1() {
   console.assert(
     (this.vboFcount_a_Pos1 + this.vboFcount_a_Colr1) * this.FSIZE ==
       this.vboStride,
-    "Uh oh! VBObox1.vboStride disagrees with attribute-size values!"
+    "Uh oh! VBOGouraud.vboStride disagrees with attribute-size values!"
   );
 
   this.vboOffset_a_Pos1 = 0;
@@ -107,7 +111,7 @@ function VBObox1() {
   this.matl0 = new Material(MATL_RED_PLASTIC);
 }
 
-VBObox1.prototype.init = function () {
+VBOGouraud.prototype.init = function () {
   this.locs["shader"] = createProgram(gl, this.VERT_SRC, this.FRAG_SRC);
   if (!this.locs["shader"]) {
     console.log(
@@ -152,6 +156,7 @@ VBObox1.prototype.init = function () {
   this.assignUniformLoc(gl, "u_NormalMatrix1");
   this.assignUniformLoc(gl, "u_eyePosWorld");
   this.assignUniformLoc(gl, "u_isBlinn");
+  this.assignUniformLoc(gl, "u_isLightOn")
 
   // Material property values:
   this.assignUniformLoc(gl, "u_MatlSet[0].emit");
@@ -170,7 +175,7 @@ VBObox1.prototype.init = function () {
   this.assignUniformLoc(gl, "u_LampSet[0].spec");
 };
 
-VBObox1.prototype.switchToMe = function () {
+VBOGouraud.prototype.switchToMe = function () {
   gl.useProgram(this.locs["shader"]);
 
   gl.bindBuffer(gl.ARRAY_BUFFER, this.locs["vbo"]);
@@ -200,9 +205,10 @@ VBObox1.prototype.switchToMe = function () {
   // gl.uniform3f(this.locs["u_AmbientLight1"], 0.2, 0.2, 0.2);
 
   gl.uniform1i(this.locs["u_isBlinn"], g_isBlinn);
+  gl.uniform1i(this.locs["u_isLightOn"], g_isLightOn);
 
   // Light 0:
-  this.light0.I_pos.elements.set([5.0, 8.0, 7.0]);
+  this.light0.I_pos.elements.set(g_lightPos);
   this.light0.I_ambi.elements.set([0.2, 0.2, 0.2]);
   this.light0.I_diff.elements.set([0.8, 0.8, 0.8]);
   this.light0.I_spec.elements.set([0.8, 0.8, 0.8]);
@@ -226,7 +232,7 @@ VBObox1.prototype.switchToMe = function () {
   gl.uniform3fv(this.locs["u_eyePosWorld"], g_Camera.elements.slice(0, 3));
 };
 
-VBObox1.prototype.isReady = function () {
+VBOGouraud.prototype.isReady = function () {
   var isOK = true;
 
   if (gl.getParameter(gl.CURRENT_PROGRAM) != this.locs["shader"]) {
@@ -246,7 +252,7 @@ VBObox1.prototype.isReady = function () {
   return isOK;
 };
 
-VBObox1.prototype.adjust = function () {
+VBOGouraud.prototype.adjust = function () {
   if (this.isReady() == false) {
     console.log(
       "ERROR! before" +
@@ -291,7 +297,7 @@ VBObox1.prototype.adjust = function () {
   );
 };
 
-VBObox1.prototype.draw = function () {
+VBOGouraud.prototype.draw = function () {
   if (this.isReady() == false) {
     console.log(
       "ERROR! before" +
@@ -307,7 +313,7 @@ VBObox1.prototype.draw = function () {
   );
 };
 
-VBObox1.prototype.reload = function () {
+VBOGouraud.prototype.reload = function () {
   gl.bufferSubData(
     gl.ARRAY_BUFFER,
     0,
@@ -315,7 +321,7 @@ VBObox1.prototype.reload = function () {
   );
 };
 
-VBObox1.prototype.assignUniformLoc = function (gl, uniform) {
+VBOGouraud.prototype.assignUniformLoc = function (gl, uniform) {
   var u_uniform = gl.getUniformLocation(gl.program, uniform);
   if (!u_uniform) {
     console.log("Failed to get the storage location of " + uniform);

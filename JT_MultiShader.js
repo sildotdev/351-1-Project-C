@@ -79,7 +79,7 @@ var g_canvasID;									// HTML-5 'canvas' element ID#
 
 // For multiple VBOs & Shaders:-----------------
 worldBox = new VBObox0();		  // Holds VBO & shaders for 3D 'world' ground-plane grid, etc;
-part1Box = new VBObox1();		  // "  "  for first set of custom-shaded 3D parts
+part1Box = new VBOGouraud();		  // "  "  for first set of custom-shaded 3D parts
 part2Box = new VBObox2();     // "  "  for second set of custom-shaded 3D parts
 
 // For animation:---------------------
@@ -120,6 +120,8 @@ var g_vpAspect = 1;
 
 var g_isBlinn = 0;              // 0 == Phong, 1 == Blinn-Phong
 var g_selectedMaterial = new Material( MATL_RED_PLASTIC )
+var g_isLightOn = 1;            // 0 == off, 1 == on
+var g_lightPos = [0, 0, 0];   // light position
 
 function main() {
 //=============================================================================
@@ -461,4 +463,52 @@ function changeMaterial() {
     default:
       break;
   }
+}
+
+function changeLightSwitch() {
+  var selectValue = document.getElementById("lightSwitch").checked;
+
+  g_isLightOn = selectValue ? 1 : 0;
+}
+
+function changeLightX(bFromNumInput) {
+  var range = document.getElementById("lightX");
+  var input = document.getElementById("lightXValue");
+
+  if (bFromNumInput) {
+    range.value = input.value;
+  }
+  else {
+    input.value = range.value;
+  }
+
+  g_lightPos[0] = range.value;
+}
+
+function changeLightY(bFromNumInput) {
+  var range = document.getElementById("lightY");
+  var input = document.getElementById("lightYValue");
+
+  if (bFromNumInput) {
+    range.value = input.value;
+  }
+  else {
+    input.value = range.value;
+  }
+
+  g_lightPos[1] = range.value;
+}
+
+function changeLightZ(bFromNumInput) {
+  var range = document.getElementById("lightZ");
+  var input = document.getElementById("lightZValue");
+
+  if (bFromNumInput) {
+    range.value = input.value;
+  }
+  else {
+    input.value = range.value;
+  }
+
+  g_lightPos[2] = range.value;
 }
