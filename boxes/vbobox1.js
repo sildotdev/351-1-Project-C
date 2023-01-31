@@ -104,7 +104,7 @@ function VBObox1() {
   this.NormalMatrix1 = new Matrix4();
 
   this.light0 = new LightsT();
-  this.matl0 = new Material(MATL_EMERALD);
+  this.matl0 = new Material(MATL_RED_PLASTIC);
 }
 
 VBObox1.prototype.init = function () {
@@ -199,7 +199,7 @@ VBObox1.prototype.switchToMe = function () {
   // gl.uniform3f(this.locs["u_LightPosition1"], 5.0, 8.0, 7.0);
   // gl.uniform3f(this.locs["u_AmbientLight1"], 0.2, 0.2, 0.2);
 
-  gl.uniform1i(this.locs["u_isBlinn"], 0);
+  gl.uniform1i(this.locs["u_isBlinn"], g_isBlinn);
 
   // Light 0:
   this.light0.I_pos.elements.set([5.0, 8.0, 7.0]);
@@ -213,11 +213,17 @@ VBObox1.prototype.switchToMe = function () {
   gl.uniform3fv(this.locs["u_LampSet[0].spec"], this.light0.I_spec.elements);
 
   // Material 0:
+  this.matl0 = g_selectedMaterial;
+
   gl.uniform3fv(this.locs["u_MatlSet[0].emit"], this.matl0.K_emit.slice(0, 3));
   gl.uniform3fv(this.locs["u_MatlSet[0].ambi"], this.matl0.K_ambi.slice(0, 3));
   gl.uniform3fv(this.locs["u_MatlSet[0].diff"], this.matl0.K_diff.slice(0, 3));
   gl.uniform3fv(this.locs["u_MatlSet[0].spec"], this.matl0.K_spec.slice(0, 3));
   gl.uniform1i(this.locs["u_MatlSet[0].shiny"], parseInt(this.matl0.K_shiny, 10));
+
+  // Eye position:
+
+  gl.uniform3fv(this.locs["u_eyePosWorld"], g_Camera.elements.slice(0, 3));
 };
 
 VBObox1.prototype.isReady = function () {

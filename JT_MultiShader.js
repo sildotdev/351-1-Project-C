@@ -89,7 +89,7 @@ var g_lastMS = Date.now();			// Timestamp (in milliseconds) for our
                                 // time-varying params for our webGL drawings.
   // All time-dependent params (you can add more!)
 var g_angleNow0  =  0.0; 			  // Current rotation angle, in degrees.
-var g_angleRate0 = 45.0;				// Rotation angle rate, in degrees/second.
+var g_angleRate0 = 30.0;				// Rotation angle rate, in degrees/second.
                                 //---------------
 var g_angleNow1  = 100.0;       // current angle, in degrees
 var g_angleRate1 =  95.0;        // rotation angle rate, degrees/sec
@@ -117,6 +117,9 @@ var g_show1 = 1;								// 	"					"			VBO1		"				"				"
 var g_show2 = 0;                //  "         "     VBO2    "       "       "
 
 var g_vpAspect = 1;
+
+var g_isBlinn = 0;              // 0 == Phong, 1 == Blinn-Phong
+var g_selectedMaterial = new Material( MATL_RED_PLASTIC )
 
 function main() {
 //=============================================================================
@@ -410,10 +413,52 @@ function changeShader() {
   var selectValue = document.getElementById("shaderSelect").value;
 
   console.log(selectValue)
+
 }
 
 function changeLighting() {
   var selectValue = document.getElementById("lightingSelect").value;
 
+  g_isBlinn = selectValue == "blinn" ? 1 : 0;
+}
+
+function changeMaterial() {
+  var selectValue = document.getElementById("materialSelect").value;
+
   console.log(selectValue)
+
+  switch (selectValue) {
+    case "MATL_RED_PLASTIC":
+      g_selectedMaterial.setMatl(MATL_RED_PLASTIC)
+      break;
+    case "MATL_BLU_PLASTIC":
+      g_selectedMaterial.setMatl(MATL_BLU_PLASTIC)
+      break;
+    case "MATL_BRASS":
+      g_selectedMaterial.setMatl(MATL_BRASS)
+      break;
+    case "MATL_BRONZE_DULL":
+      g_selectedMaterial.setMatl(MATL_BRONZE_DULL)
+      break;
+    case "MATL_BRONZE_SHINY":
+      g_selectedMaterial.setMatl(MATL_BRONZE_SHINY)
+      break;
+    case "MATL_CHROME":
+      g_selectedMaterial.setMatl(MATL_CHROME)
+      break;
+    case "MATL_PEWTER":
+      g_selectedMaterial.setMatl(MATL_PEWTER)
+      break;
+    case "MATL_EMERALD":
+      g_selectedMaterial.setMatl(MATL_EMERALD)
+      break;
+    case "MATL_JADE":
+      g_selectedMaterial.setMatl(MATL_JADE)
+      break;
+    case "MATL_TURQUOISE":
+      g_selectedMaterial.setMatl(MATL_TURQUOISE)
+      break;
+    default:
+      break;
+  }
 }
