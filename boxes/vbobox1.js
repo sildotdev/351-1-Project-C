@@ -49,7 +49,7 @@ function VBObox1() {
     "  gl_Position = u_MvpMatrix1 * a_Position1;\n" +
     "  vec3 normal = normalize(vec3(u_NormalMatrix1 * a_Normal1));\n" +
     "  vec4 vertexPosition = u_ModelMatrix1 * a_Position1;\n" +
-    "  vec3 lightDirection = normalize(u_LightPosition1 - vec3(vertexPosition));\n" +
+    "  vec3 lightDirection = normalize(u_LampSet[0].pos - vec3(vertexPosition));\n" +
     "  vec3 eyeDirection = normalize(u_eyePosWorld - vec3(vertexPosition));\n" +
     "  float nDotL = max(dot(lightDirection, normal), 0.0);\n" +
     "  float e64; \n " +
@@ -60,9 +60,9 @@ function VBObox1() {
     "    e64 = pow(max(dot(reflect(-lightDirection, normal), eyeDirection), 0.0), 64.0);\n" +
     "  }\n" +
     "  vec3 emissive = u_MatlSet[0].emit;\n" +
-    "  vec3 ambient = u_AmbientLight1 * color.rgb;\n" +
-    "  vec3 diffuse = u_LightColor1 * color.rgb * nDotL;\n" +
-    "  vec3 specular = u_LightColor1 * color.rgb * e64;\n" +
+    "  vec3 ambient = u_LampSet[0].ambi * u_MatlSet[0].ambi;\n" +
+    "  vec3 diffuse = u_LampSet[0].diff * u_MatlSet[0].diff * nDotL;\n" +
+    "  vec3 specular = u_LampSet[0].spec * u_MatlSet[0].spec * e64;\n" +
     "  v_Color1 = vec4(emissive + ambient + diffuse + specular, color.a);\n" +
     "}\n";
 
@@ -102,9 +102,9 @@ function VBObox1() {
   this.MvpMatrix1 = new Matrix4();
   this.ModelMatrix1 = new Matrix4();
   this.NormalMatrix1 = new Matrix4();
-  this.LightColor1 = new Float32Array([1.0, 1.0, 1.0]);
-  this.LightPosition1 = new Float32Array([0.0, 0.0, 0.0]);
-  this.AmbientLight1 = new Float32Array([0.2, 0.2, 0.2]);
+
+  this.light0 = new LightsT();
+  this.matl0 = new Material(MATL_EMERALD);
 }
 
 VBObox1.prototype.init = function () {
@@ -150,9 +150,6 @@ VBObox1.prototype.init = function () {
   this.assignUniformLoc(gl, "u_MvpMatrix1");
   this.assignUniformLoc(gl, "u_ModelMatrix1");
   this.assignUniformLoc(gl, "u_NormalMatrix1");
-  this.assignUniformLoc(gl, "u_LightColor1");
-  this.assignUniformLoc(gl, "u_LightPosition1");
-  this.assignUniformLoc(gl, "u_AmbientLight1");
   this.assignUniformLoc(gl, "u_eyePosWorld");
   this.assignUniformLoc(gl, "u_isBlinn");
 
@@ -198,11 +195,29 @@ VBObox1.prototype.switchToMe = function () {
   gl.enableVertexAttribArray(this.locs["a_Position1"]);
   gl.enableVertexAttribArray(this.locs["a_Normal1"]);
 
-  gl.uniform3f(this.locs["u_LightColor1"], 0.8, 0.8, 0.8);
-  gl.uniform3f(this.locs["u_LightPosition1"], 5.0, 8.0, 7.0);
-  gl.uniform3f(this.locs["u_AmbientLight1"], 0.2, 0.2, 0.2);
+  // gl.uniform3f(this.locs["u_LightColor1"], 0.8, 0.8, 0.8);
+  // gl.uniform3f(this.locs["u_LightPosition1"], 5.0, 8.0, 7.0);
+  // gl.uniform3f(this.locs["u_AmbientLight1"], 0.2, 0.2, 0.2);
 
   gl.uniform1i(this.locs["u_isBlinn"], 0);
+
+  // Light 0:
+  this.light0.I_pos.elements.set([5.0, 8.0, 7.0]);
+  this.light0.I_ambi.elements.set([0.2, 0.2, 0.2]);
+  this.light0.I_diff.elements.set([0.8, 0.8, 0.8]);
+  this.light0.I_spec.elements.set([0.8, 0.8, 0.8]);
+
+  gl.uniform3fv(this.locs["u_LampSet[0].pos"], this.light0.I_pos.elements.slice(0, 3));
+  gl.uniform3fv(this.locs["u_LampSet[0].ambi"], this.light0.I_ambi.elements);
+  gl.uniform3fv(this.locs["u_LampSet[0].diff"], this.light0.I_diff.elements);
+  gl.uniform3fv(this.locs["u_LampSet[0].spec"], this.light0.I_spec.elements);
+
+  // Material 0:
+  gl.uniform3fv(this.locs["u_MatlSet[0].emit"], this.matl0.K_emit.slice(0, 3));
+  gl.uniform3fv(this.locs["u_MatlSet[0].ambi"], this.matl0.K_ambi.slice(0, 3));
+  gl.uniform3fv(this.locs["u_MatlSet[0].diff"], this.matl0.K_diff.slice(0, 3));
+  gl.uniform3fv(this.locs["u_MatlSet[0].spec"], this.matl0.K_spec.slice(0, 3));
+  gl.uniform1i(this.locs["u_MatlSet[0].shiny"], parseInt(this.matl0.K_shiny, 10));
 };
 
 VBObox1.prototype.isReady = function () {
