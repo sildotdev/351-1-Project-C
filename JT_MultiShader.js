@@ -86,7 +86,7 @@ gouraudString = new VBOGouraudString();
 gouraudSpiral = new VBOGouraudSpiral();
 
 part2Box = new VBOPhong();     // "  "  for second set of custom-shaded 3D parts
-
+phongCreature = new VBOPhongCreature();
 
 // For animation:---------------------
 var g_lastMS = Date.now();			// Timestamp (in milliseconds) for our 
@@ -196,7 +196,7 @@ function main() {
 	gouraudString.init(gl);
   gouraudSpiral.init(gl);
   part2Box.init(gl);    //  "   "   "  for 2nd kind of shading & lighting
-	
+	phongCreature.init(gl);
   gl.clearColor(0.2, 0.2, 0.2, 1);	  // RGBA color for clearing <canvas>
 
   var xtraMargin = 16;
@@ -469,6 +469,10 @@ var b4Wait = b4Draw - g_lastMS;
 	  part2Box.switchToMe();  // Set WebGL to render from this VBObox.
   	part2Box.adjust();		  // Send new values for uniforms to the GPU, and
   	part2Box.draw();			  // draw our VBO's contents using our shaders.
+
+    phongCreature.switchToMe();
+    phongCreature.adjust();
+    phongCreature.draw();
   	}
 /* // ?How slow is our own code?  	
 var aftrDraw = Date.now();
