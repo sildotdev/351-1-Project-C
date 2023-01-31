@@ -114,8 +114,8 @@ var g_posMin1 = -1.0;
 // For mouse/keyboard:------------------------
 var g_show0 = 1;								// 0==Show, 1==Hide VBO0 contents on-screen.
 // @TODO: g_show1 = 1; g_show2 = 0;
-var g_show1 = 0;								// 	"					"			VBO1		"				"				" 
-var g_show2 = 1;                //  "         "     VBO2    "       "       "
+var g_show1 = 1;								// 	"					"			VBO1		"				"				" 
+var g_show2 = 0;                //  "         "     VBO2    "       "       "
 
 var g_vpAspect = 1;
 
@@ -124,7 +124,7 @@ var g_selectedMaterial = new Material( MATL_RED_PLASTIC )
 var g_isLightOn = 1;            // 0 == off, 1 == on
 var g_lightPos = [5, 3, 2];   // light position
 var g_lightAmbi = [0.2, 0.2, 0.2];  // light ambient
-var g_lightDiff = [0.5, 0.5, 0.5];  // light diffuse
+var g_lightDiff = [1.0, 1.0, 1.0];  // light diffuse
 var g_lightSpec = [0.5, 0.5, 0.5];  // light specular
 
 function main() {
