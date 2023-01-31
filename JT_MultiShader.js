@@ -183,8 +183,6 @@ function main() {
 	
   gl.clearColor(0.2, 0.2, 0.2, 1);	  // RGBA color for clearing <canvas>
 
-  window.addEventListener("keydown", myKeyDown);
-
   var xtraMargin = 16;
   
   // ==============ANIMATION=============
@@ -215,6 +213,7 @@ function main() {
 
     requestAnimationFrame(tick, g_canvasID); // browser callback request; wait
                                 // til browser is ready to re-draw canvas, then
+    cameraTick();
     timerAll();  // Update all time-varying params, and
     drawAll();                // Draw all the VBObox contents
     };
@@ -223,7 +222,7 @@ function main() {
 }
 
 // thank you https://learnopengl.com/Getting-started/Camera
-var g_Camera = new Vector3([3.0, 0, 1.0]);
+var g_Camera = new Vector3([5.0, 0.0, 1.0]);
 var g_CameraFront = new Vector3([-1, 0, 0]);
 var g_CameraUp = new Vector3([0, 0, 1.0]);
 
@@ -231,112 +230,163 @@ var g_Pitch = -1 * Math.PI; g_Yaw = 0.0; g_Roll = 0.0;
 var g_CameraDirection = new Vector3([0, 0, 0]);
 
 function moveCameraFront(positive) {
-  var speed = 0.1;
-  if (!positive) {
-    speed = -speed;
-  }
+    var speed = 0.1;
+    if (!positive) {
+	speed = -speed;
+    }
 
-  g_Camera.elements[0] += g_CameraFront.elements[0] * speed
-  g_Camera.elements[1] += g_CameraFront.elements[1] * speed
-  // g_Camera.elements[2] += g_CameraFront.elements[2] * speed
+    g_Camera.elements[0] += g_CameraFront.elements[0] * speed
+    g_Camera.elements[1] += g_CameraFront.elements[1] * speed
+    // g_Camera.elements[2] += g_CameraFront.elements[2] * speed
 }
 
 function moveCameraRight(positive) {
-  var speed = 0.1;
-  if (!positive) {
-    speed = -speed;
-  }
+    var speed = 0.1;
+    if (!positive) {
+	speed = -speed;
+    }
 
-  rightVector = new Vector3([g_CameraFront.elements[1], -g_CameraFront.elements[0], 0]);
-  rightVector.normalize();
+    rightVector = new Vector3([g_CameraFront.elements[1], -g_CameraFront.elements[0], 0]);
+    rightVector.normalize();
 
-  g_Camera.elements[0] += rightVector.elements[0] * speed
-  g_Camera.elements[1] += rightVector.elements[1] * speed
-  g_Camera.elements[2] += rightVector.elements[2] * speed
+    g_Camera.elements[0] += rightVector.elements[0] * speed
+    g_Camera.elements[1] += rightVector.elements[1] * speed
+    g_Camera.elements[2] += rightVector.elements[2] * speed
 }
 
 function pitchCamera(positive) {
-  var speed = 0.05;
-  if (!positive) {
-    speed = -speed;
-  }
+    var speed = 0.02;
+    if (!positive) {
+	    speed = -speed;
+    }
 
-  g_Pitch += speed;
+    g_Pitch += speed;
 
-  g_CameraDirection.elements[0] = Math.cos(g_Yaw) * Math.cos(g_Pitch);
-  g_CameraDirection.elements[1] = Math.sin(g_Yaw) * Math.cos(g_Pitch);
-  g_CameraDirection.elements[2] = Math.sin(g_Pitch);
+    g_CameraDirection.elements[0] = Math.cos(g_Yaw) * Math.cos(g_Pitch);
+    g_CameraDirection.elements[1] = Math.sin(g_Yaw) * Math.cos(g_Pitch);
+    g_CameraDirection.elements[2] = Math.sin(g_Pitch);
 
-  g_CameraFront.elements[0] = g_CameraDirection.elements[0];
-  g_CameraFront.elements[1] = g_CameraDirection.elements[1];
-  g_CameraFront.elements[2] = g_CameraDirection.elements[2];
+    g_CameraFront.elements[0] = g_CameraDirection.elements[0];
+    g_CameraFront.elements[1] = g_CameraDirection.elements[1];
+    g_CameraFront.elements[2] = g_CameraDirection.elements[2];
 
-  g_CameraFront = g_CameraFront.normalize();
+    g_CameraFront = g_CameraFront.normalize();
 
-  g_CameraUp.elements[0] = Math.cos(g_Yaw) * Math.cos(g_Pitch - Math.PI / 2);
-  g_CameraUp.elements[1] = Math.sin(g_Yaw) * Math.cos(g_Pitch - Math.PI / 2);
-  g_CameraUp.elements[2] = Math.sin(g_Pitch - Math.PI / 2);
+    g_CameraUp.elements[0] = Math.cos(g_Yaw) * Math.cos(g_Pitch - Math.PI / 2);
+    g_CameraUp.elements[1] = Math.sin(g_Yaw) * Math.cos(g_Pitch - Math.PI / 2);
+    g_CameraUp.elements[2] = Math.sin(g_Pitch - Math.PI / 2);
 
-  g_CameraUp = g_CameraUp.normalize();
-
-  g_CameraFront.printMe()
+    g_CameraUp = g_CameraUp.normalize();
 }
 
 function yawCamera(positive) {
-  var speed = 0.05;
-  if (!positive) {
-    speed = -speed;
-  }
+    var speed = 0.02;
+    if (!positive) {
+	speed = -speed;
+    }
 
-  g_Yaw += speed;
+    g_Yaw += speed;
 
-  g_CameraDirection.elements[0] = Math.cos(g_Yaw) * Math.cos(g_Pitch);
-  g_CameraDirection.elements[1] = Math.sin(g_Yaw) * Math.cos(g_Pitch);
-  g_CameraDirection.elements[2] = Math.sin(g_Pitch);
+    g_CameraDirection.elements[0] = Math.cos(g_Yaw) * Math.cos(g_Pitch);
+    g_CameraDirection.elements[1] = Math.sin(g_Yaw) * Math.cos(g_Pitch);
+    g_CameraDirection.elements[2] = Math.sin(g_Pitch);
 
-  g_CameraDirection = g_CameraDirection.normalize();
+    g_CameraDirection = g_CameraDirection.normalize();
 
-  g_CameraFront.elements[0] = g_CameraDirection.elements[0];
-  g_CameraFront.elements[1] = g_CameraDirection.elements[1];
-  g_CameraFront.elements[2] = g_CameraDirection.elements[2];
+    g_CameraFront.elements[0] = g_CameraDirection.elements[0];
+    g_CameraFront.elements[1] = g_CameraDirection.elements[1];
+    g_CameraFront.elements[2] = g_CameraDirection.elements[2];
 
-  g_CameraFront = g_CameraFront.normalize();
+    g_CameraFront = g_CameraFront.normalize();
 
-  g_CameraUp.elements[0] = Math.cos(g_Yaw) * Math.cos(g_Pitch - Math.PI / 2);
-  g_CameraUp.elements[1] = Math.sin(g_Yaw) * Math.cos(g_Pitch - Math.PI / 2);
-  g_CameraUp.elements[2] = Math.sin(g_Pitch - Math.PI / 2);
+    g_CameraUp.elements[0] = Math.cos(g_Yaw) * Math.cos(g_Pitch - Math.PI / 2);
+    g_CameraUp.elements[1] = Math.sin(g_Yaw) * Math.cos(g_Pitch - Math.PI / 2);
+    g_CameraUp.elements[2] = Math.sin(g_Pitch - Math.PI / 2);
 }
 
-function myKeyDown(kev) {
-  switch (kev.code) {
-    case "KeyA":
-      moveCameraRight(false);
+var movement = [0, 0, 0];
+var looking = [0, 0, 0];
+var g_worldMat = new Matrix4();
+
+function cameraTick() {
+  if (movement[0] != 0) {
+    moveCameraRight(movement[0] > 0);
+  }
+
+  if (movement[1] != 0) {
+    moveCameraFront(movement[1] > 0);
+  }
+
+  if (looking[0] != 0) {
+    yawCamera(looking[0] > 0);
+  }
+
+  if (looking[1] != 0) {
+    pitchCamera(looking[1] > 0);
+  }
+
+  g_worldMat.setIdentity();
+  g_worldMat.perspective(45.0,   
+    g_canvasID.width / g_canvasID.height,   
+    1.0,   
+    200.0);  
+  g_worldMat.lookAt(
+    g_Camera.elements[0], g_Camera.elements[1], g_Camera.elements[2],
+    g_Camera.elements[0] + g_CameraFront.elements[0], g_Camera.elements[1] + g_CameraFront.elements[1], g_Camera.elements[2] + g_CameraFront.elements[2],
+    g_CameraUp.elements[0], g_CameraUp.elements[1], g_CameraUp.elements[2]
+  )
+
+}
+
+document.addEventListener("keydown", event => {
+  switch (event.key) {
+    case "w":
+      movement[1] = 1;
       break;
-    case "KeyD":
-      moveCameraRight(true);
+    case "a":
+      movement[0] = -1;
       break;
-    case "KeyW":
-      moveCameraFront(true);
+    case "s":
+      movement[1] = -1;
       break;
-    case "KeyS":
-      moveCameraFront(false);
-      break;
-    case "ArrowLeft":
-      yawCamera(true);
-      break;
-    case "ArrowRight":
-      yawCamera(false);
+    case "d":
+      movement[0] = 1;
       break;
     case "ArrowUp":
-      pitchCamera(false);
+      looking[1] = -1;
       break;
     case "ArrowDown":
-      pitchCamera(true);
+      looking[1] = 1;
       break;
-    default:
+    case "ArrowLeft":
+      looking[0] = 1;
+      break;
+    case "ArrowRight":
+      looking[0] = -1;
       break;
   }
-}
+});
+
+document.addEventListener("keyup", event => {
+  switch (event.key) {
+    case "w":
+    case "s":
+      movement[1] = 0;
+      break;
+    case "a":
+    case "d":
+      movement[0] = 0;
+      break;
+    case "ArrowUp":
+    case "ArrowDown":
+      looking[1] = 0;
+      break;
+    case "ArrowLeft":
+    case "ArrowRight":
+      looking[0] = 0;
+      break;
+  }
+});
 
 function timerAll() {
 //=============================================================================

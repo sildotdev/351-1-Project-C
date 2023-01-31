@@ -139,9 +139,6 @@ function VBObox0() {
 
   this.ProjMat = new Matrix4();	// Transforms CVV axes to clip axes.
   this.u_ProjMatLoc;							// GPU location for u_ProjMat uniform
-
-  this.MVP = new Matrix4();		// Transforms CVV axes to clip axes.
-  this.u_MVPLoc;								// GPU location for u_MVP uniform
 }
 
 VBObox0.prototype.init = function() {
@@ -329,13 +326,15 @@ VBObox0.prototype.adjust = function() {
               '.adjust() call you needed to call this.switchToMe()!!');
   }
   // this.ModelMat.setPerspective(30, 1, 1, 100);
-  this.ProjMat.setPerspective(60, g_vpAspect, 1, 100);
-  this.ViewMat.setLookAt(g_Camera.elements[0], g_Camera.elements[1], g_Camera.elements[2],
-    g_Camera.elements[0] + g_CameraFront.elements[0], g_Camera.elements[1] + g_CameraFront.elements[1], g_Camera.elements[2] + g_CameraFront.elements[2],
-    g_CameraUp.elements[0], g_CameraUp.elements[1], g_CameraUp.elements[2]);
+  this.ModelMat.setIdentity();
+  this.ModelMat.set(g_worldMat);
+  // this.ProjMat.setPerspective(60, g_vpAspect, 1, 100);
+  // this.ViewMat.setLookAt(g_Camera.elements[0], g_Camera.elements[1], g_Camera.elements[2],
+  //   g_Camera.elements[0] + g_CameraFront.elements[0], g_Camera.elements[1] + g_CameraFront.elements[1], g_Camera.elements[2] + g_CameraFront.elements[2],
+  //   g_CameraUp.elements[0], g_CameraUp.elements[1], g_CameraUp.elements[2]);
   // this.MVP.set(this.ProjMat).multiply(this.ViewMat).multiply(this.ModelMat);
   
-  gl.uniformMatrix4fv(this.u_ModelMatLoc, false, this.MVP.elements);
+  gl.uniformMatrix4fv(this.u_ModelMatLoc, false, this.ModelMat.elements);
   gl.uniformMatrix4fv(this.u_ViewMatLoc, false, this.ViewMat.elements);
   gl.uniformMatrix4fv(this.u_ProjMatLoc, false, this.ProjMat.elements);
 }

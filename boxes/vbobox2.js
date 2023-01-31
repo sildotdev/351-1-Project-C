@@ -297,18 +297,7 @@ VBOPhong.prototype.adjust = function () {
     this.ModelMatrix1.elements
   );
 
-  this.MvpMatrix1.setPerspective( 60, g_vpAspect, 1, 100 );
-  this.MvpMatrix1.lookAt(
-    g_Camera.elements[0],
-    g_Camera.elements[1],
-    g_Camera.elements[2],
-    g_Camera.elements[0] + g_CameraFront.elements[0],
-    g_Camera.elements[1] + g_CameraFront.elements[1],
-    g_Camera.elements[2] + g_CameraFront.elements[2],
-    g_CameraUp.elements[0],
-    g_CameraUp.elements[1],
-    g_CameraUp.elements[2]
-  );
+  this.MvpMatrix1.set(g_worldMat);
   this.MvpMatrix1.multiply(this.ModelMatrix1);
   gl.uniformMatrix4fv(
     this.locs["u_MvpMatrix1"],
